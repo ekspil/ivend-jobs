@@ -40,18 +40,18 @@ module.exports = (injects) => {
                     logger.info(`Controller ${controller.uid} lost connection`)
 
                     // set connected false
-                    await knex('controllers')
-                        .where('id', controller.controller_id)
+                    await knex("controllers")
+                        .where("id", controller.controller_id)
                         .update({
                             connected: false
                         })
                         .transacting(trx)
 
                     // add machinelog
-                    await knex('machine_logs')
+                    await knex("machine_logs")
                         .insert({
-                            message: 'Пропала связь',
-                            type: 'CONNECTION',
+                            message: "Пропала связь",
+                            type: "CONNECTION",
                             created_at: now,
                             updated_at: now,
                             machine_id: controller.machine_id

@@ -15,6 +15,7 @@ module.exports = (injects) => {
             // we already have some controller states
             .whereNotNull("controller_states.registration_time")
 
+        logger.info(controllers.length)
 
         for (const controller of controllers) {
             logger.info(`Checking connection of controller ${controller.uid}`)

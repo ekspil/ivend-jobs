@@ -15,10 +15,7 @@ module.exports = (injects) => {
             // we already have some controller states
             .whereNotNull("controller_states.registration_time")
 
-        logger.info(controllers.length)
-
         for (const controller of controllers) {
-            logger.info(`Checking connection of controller ${controller.uid}`)
             await knex.transaction(async (trx) => {
                 if (!controller.machine_id) {
                     logger.warning(`Controller ${controller.uid} does not have applied machine, cannot check status`)
@@ -35,11 +32,8 @@ module.exports = (injects) => {
 
                 const now = new Date()
                 const lastCommandTime = Math.max(controller.registration_time.getTime(), (sale ? sale.created_at.getTime() : null))
-                logger.info(`lastCommandTime ${lastCommandTime} ${Number(process.env.CONTROLLER_CONNECTION_TIMEOUT_MINUTES) * 60 * 1000}`)
 
                 const expiryDate = new Date(lastCommandTime + Number(process.env.CONTROLLER_CONNECTION_TIMEOUT_MINUTES) * 60 * 1000)
-
-                logger.info(`lastCommandTime ${new Date(lastCommandTime)} expiryDate ${expiryDate}`)
 
                 if (now > expiryDate) {
                     logger.info(`Controller ${controller.uid} lost connection`)

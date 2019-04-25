@@ -35,6 +35,7 @@ module.exports = (injects) => {
 
                 const now = new Date()
                 const lastCommandTime = Math.max(controller.registration_time.getTime(), (sale ? sale.created_at.getTime() : null))
+                logger.info(`lastCommandTime ${lastCommandTime} ${Number(process.env.CONTROLLER_CONNECTION_TIMEOUT_MINUTES) * 60 * 1000}`)
 
                 const expiryDate = new Date(lastCommandTime + Number(process.env.CONTROLLER_CONNECTION_TIMEOUT_MINUTES) * 60 * 1000)
 

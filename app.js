@@ -11,23 +11,15 @@ const knex = require("knex")({
         ssl: true
     }
 })
+
 const jobs = require("./app/jobs")({knex})
 
+jobs.start()
 
 const job = jobs.get(process.env.JOB_NAME)
 
 if (!job) {
-    throw new Error(`Job ${process.env.JOB_NAME} not found`)
-}
+    throw new Error(`Job ${process.env.JOB_NAME} not found`)}
 
 
-job
-    .run()
-    .then(() => {
-        logger.info(`Successfully ran job ${process.env.JOB_NAME}`)
-        process.exit(0)
-    })
-    .catch((e) => {
-        logger.error(e)
-        process.exit(1)
-    })
+

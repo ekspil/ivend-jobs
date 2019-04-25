@@ -3,7 +3,7 @@ const logger = require("../utils/logger")
 module.exports = (injects) => {
     const {knex} = injects
 
-    const run = async () => {
+    return async () => {
         const controllers = await knex("controllers")
             .select("machines.id as machine_id", "controller_states.registration_time", "controllers.connected as connected", "controllers.uid as uid", "controllers.id as controller_id")
             .leftJoin("controller_states", "controllers.last_state_id", "controller_states.id")
@@ -63,7 +63,4 @@ module.exports = (injects) => {
         }
     }
 
-    return {
-        run
-    }
 }

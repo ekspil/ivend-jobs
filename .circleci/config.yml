@@ -1,0 +1,133 @@
+version: 2
+
+jobs:
+  build:
+    docker:
+      - image: circleci/node:11.1.0
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "package.json" }}-{{ checksum "package-lock.json" }}
+          - v1-dependencies-{{ checksum "package.json" }}-
+          - v1-dependencies-
+
+      - run: npm install
+      - run: npm run lint
+
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "package.json" }}-{{ checksum "package-lock.json" }}
+
+  docker_push_tagged:
+    docker:
+      - image: docker:17.05.0-ce-git
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+      - setup_remote_docker
+      - deploy:
+          name: Push application Docker image
+          command: |
+            docker build -t "registry.gitlab.com/pshenmic/ivend/jobs:$CIRCLE_TAG" .
+            docker login registry.gitlab.com -u "pshenmic" -p "$GITLAB_TOKEN"
+            docker push "registry.gitlab.com/pshenmic/ivend/jobs:$CIRCLE_TAG"
+
+  docker_push_develop:
+    docker:
+      - image: docker:17.05.0-ce-git
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+      - setup_remote_docker
+      - deploy:
+          name: Push application Docker image
+          command: |
+            docker build -t "registry.gitlab.com/pshenmic/ivend/jobs:$CIRCLE_SHA1" .
+            docker login registry.gitlab.com -u "pshenmic" -p "$GITLAB_TOKEN"
+            docker push "registry.gitlab.com/pshenmic/ivend/jobs:$CIRCLE_SHA1"
+
+  deploy_develop:
+    docker:
+      - image: circleci/node:11.1.0
+
+    working_directory: ~/repo
+
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "49:d0:99:ae:33:c3:33:11:f9:5c:9e:85:44:90:2b:78"
+
+      - run:
+          name: Deploy
+          command: |
+            ssh-keyscan -H $DEPLOY_SERVER >> ~/.ssh/known_hosts &&
+            echo "CIRCLE_SHA1=$CIRCLE_SHA1" > ./sshenv &&
+            scp ./sshenv root@$DEPLOY_SERVER:~/.ssh/environment &&
+            ssh root@$DEPLOY_SERVER 'source /opt/.env && \
+            cd /opt/jobs && \
+            git checkout develop && \
+            git pull && \
+            envsubst < development-kube-config.yml > /tmp/development-kube-config.yml.patched && \
+            microk8s.kubectl apply -f /tmp/development-kube-config.yml.patched'
+
+  deploy_production:
+    docker:
+      - image: circleci/node:11.1.0
+
+    working_directory: ~/repo
+
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "49:d0:99:ae:33:c3:33:11:f9:5c:9e:85:44:90:2b:78"
+      - run:
+          name: Deploy
+          command: ssh-keyscan -H $DEPLOY_SERVER >> ~/.ssh/known_hosts && ssh root@$DEPLOY_SERVER 'source /opt/.env && cd /opt/jobs && git checkout master && git pull && microk8s.kubectl apply -f production-kube-config.yml'
+
+workflows:
+  version: 2
+  jobs_deploy:
+    jobs:
+      - build:
+          filters:
+            branches:
+              only:
+                - master
+                - develop
+      - docker_push_tagged:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /.*/
+      - docker_push_develop:
+          filters:
+            branches:
+              only: develop
+          requires:
+            - build
+      - deploy_develop:
+          filters:
+            branches:
+              only:
+                - develop
+          requires:
+            - build
+            - docker_push_develop
+      - deploy_production:
+          filters:
+            branches:
+              only:
+                - master
+          requires:
+            - build

@@ -1,0 +1,25 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: job_check_controller_connection
+  namespace: development
+  labels:
+    app: jobs
+    job_name: check_controller_connection
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: check_controller_connection_job
+            image: registry.gitlab.com/pshenmic/ivend/jobs:$CIRCLE_SHA1
+            env:
+            - name: JOB_NAME
+              value: "check_controller_connection"
+            envFrom:
+              - configMapRef:
+                  name: jobs-config
+      imagePullSecrets:
+      - name: gitlabregistrycred

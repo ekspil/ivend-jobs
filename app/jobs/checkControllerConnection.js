@@ -17,6 +17,7 @@ module.exports = (injects) => {
 
 
         for (const controller of controllers) {
+            logger.info(`Checking connection of controller ${controller.uid}`)
             await knex.transaction(async (trx) => {
                 if (!controller.machine_id) {
                     logger.warning(`Controller ${controller.uid} does not have applied machine, cannot check status`)

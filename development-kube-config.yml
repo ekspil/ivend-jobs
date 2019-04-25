@@ -1,26 +1,39 @@
-apiVersion: batch/v1beta1
-kind: CronJob
+apiVersion: apps/v1
+kind: Deployment
 metadata:
-  name: job-check-controller-connection
+  name: jobs
   namespace: development
   labels:
     app: jobs
-    job_name: check_controller_connection
 spec:
-  schedule: "*/1 * * * *"
-  jobTemplate:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 50%
+      maxSurge: 50%
+  selector:
+    matchLabels:
+      app: jobs
+  template:
+    metadata:
+      namespace: development
+      labels:
+        app: jobs
     spec:
-      template:
-        spec:
-          containers:
-          - name: check-controller-connection-job
-            image: registry.gitlab.com/pshenmic/ivend/jobs:$CIRCLE_SHA1
-            env:
-            - name: JOB_NAME
-              value: "CHECK_CONTROLLER_CONNECTION"
-            envFrom:
-              - configMapRef:
-                  name: jobs-config
-          imagePullSecrets:
-          - name: gitlabregistrycred
-          restartPolicy: Never
+      containers:
+      - name: graphql
+        image: registry.gitlab.com/pshenmic/ivend/jobs:$CIRCLE_SHA1
+        imagePullPolicy: Always
+        readinessProbe:
+          exec:
+            command:
+            - cat
+            - /tmp/.healthy
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        envFrom:
+          - configMapRef:
+              name: jobs-config
+      imagePullSecrets:
+      - name: gitlabregistrycred

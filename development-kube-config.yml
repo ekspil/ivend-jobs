@@ -13,7 +13,7 @@ spec:
       template:
         spec:
           containers:
-          - name: check_controller_connection_job
+          - name: check-controller-connection-job
             image: registry.gitlab.com/pshenmic/ivend/jobs:$CIRCLE_SHA1
             env:
             - name: JOB_NAME

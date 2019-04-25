@@ -1,7 +1,7 @@
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
-  name: job_check_controller_connection
+  name: job-check-controller-connection
   namespace: development
   labels:
     app: jobs

@@ -15,11 +15,11 @@ spec:
           containers:
           - name: check_controller_connection_job
             image: registry.gitlab.com/pshenmic/ivend/jobs:$CIRCLE_SHA1
-            imagePullSecrets:
-            - name: gitlabregistrycred
             env:
             - name: JOB_NAME
               value: "check_controller_connection"
             envFrom:
               - configMapRef:
                   name: jobs-config
+          imagePullSecrets:
+          - name: gitlabregistrycred

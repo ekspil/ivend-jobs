@@ -38,6 +38,8 @@ module.exports = (injects) => {
 
                 const expiryDate = new Date(lastCommandTime + Number(process.env.CONTROLLER_CONNECTION_TIMEOUT_MINUTES) * 60 * 1000)
 
+                logger.info(`lastCommandTime ${new Date(lastCommandTime)} expiryDate ${expiryDate}`)
+
                 if (now > expiryDate) {
                     logger.info(`Controller ${controller.uid} lost connection`)
 

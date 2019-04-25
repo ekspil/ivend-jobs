@@ -1,5 +1,6 @@
 require("dotenv").config()
 const logger = require("./app/utils/logger")
+const fs = require("fs")
 
 const knex = require("knex")({
     client: "pg",
@@ -16,10 +17,7 @@ const jobs = require("./app/jobs")({knex})
 
 jobs.start()
 
-const job = jobs.get(process.env.JOB_NAME)
-
-if (!job) {
-    throw new Error(`Job ${process.env.JOB_NAME} not found`)}
-
-
-
+fs.writeFile("/tmp/.healthy", "", function (err) {
+    if (err) throw err
+    logger.info("Ivend jobs has started")
+})

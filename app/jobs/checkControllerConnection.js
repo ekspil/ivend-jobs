@@ -1,3 +1,5 @@
+const logger = require("../utils/logger")
+
 module.exports = (injects) => {
     const {knex} = injects
 

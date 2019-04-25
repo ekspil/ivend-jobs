@@ -17,7 +17,7 @@ spec:
             image: registry.gitlab.com/pshenmic/ivend/jobs:$CIRCLE_SHA1
             env:
             - name: JOB_NAME
-              value: "check_controller_connection"
+              value: "CHECK_CONTROLLER_CONNECTION"
             envFrom:
               - configMapRef:
                   name: jobs-config

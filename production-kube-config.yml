@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: jobs
-  namespace: development
+  namespace: production
   labels:
     app: jobs
 spec:
@@ -17,14 +17,13 @@ spec:
       app: jobs
   template:
     metadata:
-      namespace: development
+      namespace: production
       labels:
         app: jobs
     spec:
       containers:
       - name: graphql
-        image: registry.gitlab.com/pshenmic/ivend/jobs:$CIRCLE_SHA1
-        imagePullPolicy: Always
+        image: registry.gitlab.com/pshenmic/ivend/jobs:1.0.0
         readinessProbe:
           exec:
             command:

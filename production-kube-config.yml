@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jobs
+  namespace: production
+  labels:
+    app: jobs
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 50%
+      maxSurge: 50%
+  selector:
+    matchLabels:
+      app: jobs
+  template:
+    metadata:
+      namespace: production
+      labels:
+        app: jobs
+    spec:
+      containers:
+      - name: graphql
+        image: registry.gitlab.com/pshenmic/ivend/jobs:1.0.0
+        readinessProbe:
+          exec:
+            command:
+            - cat
+            - /tmp/.healthy
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        envFrom:
+          - configMapRef:
+              name: jobs-config
+      imagePullSecrets:
+      - name: gitlabregistrycred

@@ -1,5 +1,5 @@
 require("dotenv").config()
-const logger = require("./app/utils/logger")
+const logger = require("my-custom-logger")
 const fs = require("fs")
 
 const knex = require("knex")({

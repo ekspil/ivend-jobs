@@ -1,6 +1,7 @@
 require("dotenv").config()
 const logger = require("my-custom-logger")
 const fs = require("fs")
+const version = require("./package.json").version
 
 const knex = require("knex")({
     client: "pg",
@@ -19,5 +20,5 @@ jobs.start()
 
 fs.writeFile("/tmp/.healthy", "", function (err) {
     if (err) throw err
-    logger.info("Ivend jobs has started")
+    logger.info(`Ivend jobs ${version} has started`)
 })

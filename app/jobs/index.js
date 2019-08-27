@@ -1,6 +1,6 @@
 const checkControllerConnection = require("./checkControllerConnection")
 const cron = require("node-cron")
-const logger = require("../utils/logger")
+const logger = require("my-custom-logger")
 
 const jobs = (injects) => {
     const checkControllerConnectionJob = checkControllerConnection(injects)

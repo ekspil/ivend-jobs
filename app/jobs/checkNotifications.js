@@ -9,11 +9,6 @@ const setNotificationTime = async (type, item_id) => {
     return true
 }
 
-const getUserInfo = (user) => {
-    const [userInfo] = userNotificationList.filter(usr => usr.user_id === user.user_id)
-    return userInfo
-}
-
 const checkTime = (event, item_id) => {
     if(notificationTime[event.type]){
         const timeExp =(new Date().getTime()) - notificationTime[event.type][item_id]
@@ -53,7 +48,7 @@ const sendEmail = async (email, msg) => {
     })
 }
 
-let userNotificationList = []
+
 
 module.exports = (injects) => {
 
@@ -67,8 +62,6 @@ module.exports = (injects) => {
             .where({
                 role: "VENDOR"
             })
-        userNotificationList = users
-
 
 
         for(const user of users){
@@ -88,15 +81,12 @@ module.exports = (injects) => {
                 .where({
                     user_id: user.user_id
                 })
+            user.notifications = notifications
+            user.balance = Number(balance.sum)
+            user.machines = []
 
 
-            userNotificationList = userNotificationList.map(list => {
-                if (list.user_id !== user.user_id){return list}
-                list.notifications = notifications
-                list.machines = machines
-                list.balance = Number(balance.sum)
-                return list
-            })
+           // userNotificationList.push(user)
 
             for( const machine of machines){
                 const [lastSale] = await knex("sales")
@@ -125,17 +115,11 @@ module.exports = (injects) => {
                     .orderBy("id", "desc")
                     .limit(1)
 
-                userNotificationList = userNotificationList.map(list => {
-                    if (list.user_id !== machine.user_id){return list}
-                    list.machines = list.machines.map(machin=>{
-                        if (machin.id !== machine.id){return machin}
-                        machin.lastSale =lastSale ? lastSale.created_at.getTime() : 10000000
-                        machin.lastEncashment =lastEncashment ? lastEncashment.created_at.getTime() : 10000000
-                        machin.lostConnection = lastLostConnection ? lastLostConnection.created_at.getTime() : 10000000
-                        return machin
-                    })
-                    return list
-                })
+
+                machine.lastSale =lastSale ? lastSale.created_at.getTime() : 10000000
+                machine.lastEncashment =lastEncashment ? lastEncashment.created_at.getTime() : 10000000
+                machine.lostConnection = lastLostConnection ? lastLostConnection.created_at.getTime() : 10000000
+                user.machines.push(machine)
 
             }
 
@@ -148,7 +132,7 @@ module.exports = (injects) => {
                 switch (event.type){
                     case "CONTROLLER_NO_CONNECTION":
 
-                        for (const mach of getUserInfo(user).machines ){
+                        for (const mach of user.machines ){
                             if(!checkTime(event, "machine"+mach.id)){break}
                             if(mach.lostConnection > (new Date().getTime() - 24*60*60*1000)){break}
                             if(event.telegram && event.telegramChat){
@@ -163,7 +147,7 @@ module.exports = (injects) => {
                         break
                     case "USER_LOW_BALANCE":
                         if(!checkTime(event, user)){break}
-                        if(user.balance > process.env.USER_LOW_BALANCE){break}
+                        if(user.balance > Number(process.env.USER_LOW_BALANCE)){break}
                         if(event.telegram && event.telegramChat){
                             await sendTelegram(event.telegramChat, "Баланс близок к нулю")
                         }
@@ -174,7 +158,7 @@ module.exports = (injects) => {
                         break
                     case "CONTROLLER_ENCASHMENT":
 
-                        for (const mach of getUserInfo(user).machines ){
+                        for (const mach of user.machines ){
                             if(mach.lastEncashment > (new Date().getTime() - 24*60*60*1000)){break}
                             if(!checkTime(event, "machine"+mach.id)){break}
                             if(event.telegram && event.telegramChat){
@@ -188,7 +172,7 @@ module.exports = (injects) => {
 
                         break
                     case "USER_WILL_BLOCK":
-                        if(user.balance > process.env.USER_WILL_BLOCK){break}
+                        if(user.balance > Number(process.env.USER_WILL_BLOCK)){break}
                         if(!checkTime(event, user)){break}
                         if(event.telegram && event.telegramChat){
                             await sendTelegram(event.telegramChat, "Возможна блокировка по балансу")
@@ -201,7 +185,7 @@ module.exports = (injects) => {
                     case "CONTROLLER_NO_SALES":
 
 
-                        for (const mach of getUserInfo(user).machines ){
+                        for (const mach of user.machines ){
 
                             if(mach.lastSale < (new Date().getTime() - 24*60*60*1000)){break}
                             if(!checkTime(event, "machine"+mach.id)){break}

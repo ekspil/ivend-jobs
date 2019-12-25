@@ -213,7 +213,7 @@ module.exports = (injects) => {
 
 
         }
-
+        return "Notifications sent succesfuly"
     }
 
 }

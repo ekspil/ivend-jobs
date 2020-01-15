@@ -1,9 +1,11 @@
 const checkControllerConnection = require("./checkControllerConnection")
+const checkNotifications = require("./checkNotifications")
 const cron = require("node-cron")
 const logger = require("my-custom-logger")
 
 const jobs = (injects) => {
     const checkControllerConnectionJob = checkControllerConnection(injects)
+    const checkNotificationsJob = checkNotifications(injects)
 
     const get = (jobName) => {
         switch (jobName) {
@@ -20,6 +22,14 @@ const jobs = (injects) => {
             checkControllerConnectionJob()
                 .catch((e) => {
                     logger.error("Failed to check payment requests for updated statuses")
+                    logger.error(e)
+                })
+        })        // Every 10 minutes
+        cron.schedule("*/10 * * * *", () => {
+            checkNotificationsJob()
+                .then(log => logger.info(log))
+                .catch((e) => {
+                    logger.error("Failed to check Notification requests for updated statuses")
                     logger.error(e)
                 })
         })

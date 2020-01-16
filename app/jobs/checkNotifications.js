@@ -86,7 +86,6 @@ module.exports = (injects) => {
             user.machines = []
 
 
-           // userNotificationList.push(user)
 
             for( const machine of machines){
                 const [lastSale] = await knex("sales")

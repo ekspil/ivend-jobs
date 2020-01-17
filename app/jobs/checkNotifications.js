@@ -61,9 +61,9 @@ module.exports = (injects) => {
         logger.info("Запуск проверки нотификаций")
         const users = await knex("users")
             .select("email", "phone", "id as user_id")
-            .where({
-                role: "VENDOR"
-            })
+            // .where({
+            //     role: "VENDOR"
+            // })
 
 
         for(const user of users){

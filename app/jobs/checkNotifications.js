@@ -3,9 +3,11 @@ const fetch = require("node-fetch")
 const notificationTime = {}
 
 const setNotificationTime = async (type, item_id) => {
-    notificationTime[type]= {
-        [item_id]: new Date().getTime()
+    if(!notificationTime[type]){
+        notificationTime[type]={}
     }
+    notificationTime[type][item_id] = new Date().getTime()
+
     return true
 }
 

@@ -150,7 +150,7 @@ module.exports = (injects) => {
 
                         break
                     case "USER_LOW_BALANCE":
-                        if(!checkTime(event, user.email)){break}
+                        if(!checkTime(event, "user"+user.user_id)){break}
                         if(user.balance > Number(process.env.USER_LOW_BALANCE)){break}
                         if(event.telegram && event.telegramChat){
                             await sendTelegram(event.telegramChat, "Баланс близок к нулю")
@@ -158,7 +158,7 @@ module.exports = (injects) => {
                         if(event.email){
                             await sendEmail(user.email, "Баланс близок к нулю")
                         }
-                        await setNotificationTime(event.type, user.user_id)
+                        await setNotificationTime(event.type, "user"+user.user_id)
                         break
                     case "CONTROLLER_ENCASHMENT":
 
@@ -177,14 +177,14 @@ module.exports = (injects) => {
                         break
                     case "USER_WILL_BLOCK":
                         if(user.balance > Number(process.env.USER_WILL_BLOCK)){break}
-                        if(!checkTime(event, user.email)){break}
+                        if(!checkTime(event, "user"+user.user_id)){break}
                         if(event.telegram && event.telegramChat){
                             await sendTelegram(event.telegramChat, "Возможна блокировка по балансу")
                         }
                         if(event.email){
                             await sendEmail(user.email, "Возможна блокировка по балансу")
                         }
-                        await setNotificationTime(event.type, user.user_id)
+                        await setNotificationTime(event.type, "user"+user.user_id)
                         break
                     case "CONTROLLER_NO_SALES":
 

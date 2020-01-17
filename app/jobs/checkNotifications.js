@@ -1,4 +1,4 @@
-
+const logger = require("my-custom-logger")
 const fetch = require("node-fetch")
 const notificationTime = {}
 
@@ -21,6 +21,7 @@ const checkTime = (event, item_id) => {
 
 
 const sendTelegram = async (chat, msg) => {
+    logger.info(`Попытка отправить сообщение(${msg}) в чат: ${chat}`)
     const body = JSON.stringify({chat, msg})
     const url = `${process.env.NOTIFICATION_URL}/api/v1/template/TELEGRAM_MSG`
     const method = "POST"
@@ -57,6 +58,7 @@ module.exports = (injects) => {
     const {knex} = injects
 
     return async () => {
+        logger.info("Запуск проверки нотификаций")
         const users = await knex("users")
             .select("email", "phone", "id as user_id")
             .where({
@@ -134,6 +136,7 @@ module.exports = (injects) => {
                         for (const mach of user.machines ){
                             if(!checkTime(event, "machine"+mach.id)){break}
                             if(mach.lostConnection > (new Date().getTime() - 24*60*60*1000)){break}
+                            logger.info(`found CONTROLLER_NO_CONNECTION for ${user.email}`)
                             if(event.telegram && event.telegramChat){
                                 await sendTelegram(event.telegramChat, "Нет связи с контроллером на автомате:" + mach.number)
                             }
@@ -147,6 +150,7 @@ module.exports = (injects) => {
                     case "USER_LOW_BALANCE":
                         if(!checkTime(event, user)){break}
                         if(user.balance > Number(process.env.USER_LOW_BALANCE)){break}
+                        logger.info(`found USER_LOW_BALANCE for ${user.email}`)
                         if(event.telegram && event.telegramChat){
                             await sendTelegram(event.telegramChat, "Баланс близок к нулю")
                         }
@@ -160,6 +164,7 @@ module.exports = (injects) => {
                         for (const mach of user.machines ){
                             if(mach.lastEncashment > (new Date().getTime() - 24*60*60*1000)){break}
                             if(!checkTime(event, "machine"+mach.id)){break}
+                            logger.info(`found CONTROLLER_ENCASHMENT for ${user.email}`)
                             if(event.telegram && event.telegramChat){
                                 await sendTelegram(event.telegramChat, "Произведена инкассация на автомате:" + mach.number)
                             }
@@ -173,6 +178,7 @@ module.exports = (injects) => {
                     case "USER_WILL_BLOCK":
                         if(user.balance > Number(process.env.USER_WILL_BLOCK)){break}
                         if(!checkTime(event, user)){break}
+                        logger.info(`found USER_WILL_BLOCK for ${user.email}`)
                         if(event.telegram && event.telegramChat){
                             await sendTelegram(event.telegramChat, "Возможна блокировка по балансу")
                         }
@@ -188,7 +194,7 @@ module.exports = (injects) => {
 
                             if(mach.lastSale < (new Date().getTime() - 24*60*60*1000)){break}
                             if(!checkTime(event, "machine"+mach.id)){break}
-
+                            logger.info(`found CONTROLLER_NO_SALES for ${user.email}`)
                             if(event.telegram && event.telegramChat){
                                 await sendTelegram(event.telegramChat, "Не было продаж в течении суток на автомате:" + mach.number)
                             }
@@ -212,7 +218,7 @@ module.exports = (injects) => {
 
 
         }
-        return "Notifications sent succesfuly"
+        return "Notifications sent successfully"
     }
 
 }

@@ -25,7 +25,7 @@ const jobs = (injects) => {
                     logger.error(e)
                 })
         })        // Every 10 minutes
-        cron.schedule("*/1 * * * *", () => {
+        cron.schedule("*/5 * * * *", () => {
             checkNotificationsJob()
                 .then(log => logger.info(log))
                 .catch((e) => {

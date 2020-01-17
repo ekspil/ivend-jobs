@@ -14,7 +14,6 @@ const setNotificationTime = async (type, item_id) => {
 const checkTime = (event, item_id) => {
     if(notificationTime[event.type]){
         const timeExp =(new Date().getTime()) - notificationTime[event.type][item_id]
-        logger.info(`Time exept: ${timeExp} and time:${notificationTime[event.type][item_id]}`)
         if (timeExp < (24*60*60*1000) ){
             return false
         }
@@ -24,7 +23,6 @@ const checkTime = (event, item_id) => {
 
 
 const sendTelegram = async (chat, msg) => {
-    logger.info(`Попытка отправить сообщение(${msg}) в чат: ${chat}`)
     const body = JSON.stringify({chat, msg})
     const url = `${process.env.NOTIFICATION_URL}/api/v1/template/TELEGRAM_MSG`
     const method = "POST"

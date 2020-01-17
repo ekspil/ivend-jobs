@@ -150,7 +150,7 @@ module.exports = (injects) => {
 
                         break
                     case "USER_LOW_BALANCE":
-                        if(!checkTime(event, user)){break}
+                        if(!checkTime(event, user.email)){break}
                         if(user.balance > Number(process.env.USER_LOW_BALANCE)){break}
                         if(event.telegram && event.telegramChat){
                             await sendTelegram(event.telegramChat, "Баланс близок к нулю")
@@ -177,7 +177,7 @@ module.exports = (injects) => {
                         break
                     case "USER_WILL_BLOCK":
                         if(user.balance > Number(process.env.USER_WILL_BLOCK)){break}
-                        if(!checkTime(event, user)){break}
+                        if(!checkTime(event, user.email)){break}
                         if(event.telegram && event.telegramChat){
                             await sendTelegram(event.telegramChat, "Возможна блокировка по балансу")
                         }

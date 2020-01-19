@@ -210,8 +210,11 @@ module.exports = (injects) => {
 
 
             }
+            if(user.msg){
+                logger.info(`Sending email to ${user.email}. Message: ${user.msg}`)
+                await sendEmail(user.email, user.msg)
+            }
 
-            await sendEmail(user.email, user.msg)
 
 
         }

@@ -87,6 +87,7 @@ module.exports = (injects) => {
             user.notifications = notifications
             user.balance = Number(balance.sum)
             user.machines = []
+            user.msg=""
 
 
 
@@ -136,12 +137,12 @@ module.exports = (injects) => {
 
                         for (const mach of user.machines ){
                             if(!checkTime(event, "machine"+mach.id)){break}
-                            if(mach.lostConnection > (new Date().getTime() - 24*60*60*1000)){break}
+                            if(mach.lostConnection < (new Date().getTime() - 24*60*60*1000)){break}
                             if(event.telegram && event.telegramChat){
                                 await sendTelegram(event.telegramChat, "Нет связи с контроллером на автомате:" + mach.number)
                             }
                             if(event.email){
-                                await sendEmail(user.email, "Нет связи с контроллером на автомате:" + mach.number)
+                                user.msg =  user.msg +"<br>"+"Нет связи с контроллером на автомате:" + mach.number
                             }
                             await setNotificationTime(event.type, "machine"+mach.id)
                         }
@@ -149,25 +150,25 @@ module.exports = (injects) => {
                         break
                     case "USER_LOW_BALANCE":
                         if(!checkTime(event, "user"+user.user_id)){break}
-                        if(user.balance > Number(process.env.USER_LOW_BALANCE)){break}
+                        if(user.balance > Number(process.env.USER_LOW_BALANCE) ||  user.balance < Number(process.env.USER_WILL_BLOCK)){break}
                         if(event.telegram && event.telegramChat){
                             await sendTelegram(event.telegramChat, "Баланс близок к нулю")
                         }
                         if(event.email){
-                            await sendEmail(user.email, "Баланс близок к нулю")
+                            user.msg =  user.msg +"<br>"+"Баланс близок к нулю"
                         }
                         await setNotificationTime(event.type, "user"+user.user_id)
                         break
                     case "CONTROLLER_ENCASHMENT":
 
                         for (const mach of user.machines ){
-                            if(mach.lastEncashment > (new Date().getTime() - 24*60*60*1000)){break}
+                            if(mach.lastEncashment < (new Date().getTime() - 24*60*60*1000)){break}
                             if(!checkTime(event, "machine"+mach.id)){break}
                             if(event.telegram && event.telegramChat){
                                 await sendTelegram(event.telegramChat, "Произведена инкассация на автомате:" + mach.number)
                             }
                             if(event.email){
-                                await sendEmail(user.email, "Произведена инкассация на автомате:" + mach.number)
+                                user.msg =  user.msg +"<br>"+"Произведена инкассация на автомате:" + mach.number
                             }
                             await setNotificationTime(event.type, "machine"+mach.id)
                         }
@@ -180,7 +181,7 @@ module.exports = (injects) => {
                             await sendTelegram(event.telegramChat, "Возможна блокировка по балансу")
                         }
                         if(event.email){
-                            await sendEmail(user.email, "Возможна блокировка по балансу")
+                            user.msg =  user.msg +"<br>"+"Возможна блокировка по балансу"
                         }
                         await setNotificationTime(event.type, "user"+user.user_id)
                         break
@@ -195,7 +196,7 @@ module.exports = (injects) => {
                                 await sendTelegram(event.telegramChat, "Не было продаж в течении суток на автомате:" + mach.number)
                             }
                             if(event.email){
-                                await sendEmail(user.email, "Не было продаж в течении суток на автомате:" + mach.number)
+                                user.msg =  user.msg +"<br>"+"Не было продаж в течении суток на автомате:" + mach.number
                             }
                             await setNotificationTime(event.type, "machine"+mach.id)
                         }
@@ -210,7 +211,7 @@ module.exports = (injects) => {
 
             }
 
-
+            await sendEmail(user.email, user.msg)
 
 
         }

@@ -131,6 +131,7 @@ module.exports = (injects) => {
                 if(!event.email && !event.telegram){
                     continue
                 }
+                user.extraEmail = event.extraEmail
 
                 switch (event.type){
                     case "CONTROLLER_NO_CONNECTION":
@@ -138,7 +139,7 @@ module.exports = (injects) => {
                         for (const mach of user.machines ){
                             if(!checkTime(event, "machine"+mach.id)){break}
                             if(mach.lostConnection < (new Date().getTime() - 24*60*60*1000)){break}
-                            if(event.telegram && event.telegramChat){
+                            if(event.tlgrm && event.telegramChat){
                                 await sendTelegram(event.telegramChat, "Нет связи с контроллером на автомате:" + mach.number)
                             }
                             if(event.email){
@@ -151,7 +152,7 @@ module.exports = (injects) => {
                     case "USER_LOW_BALANCE":
                         if(!checkTime(event, "user"+user.user_id)){break}
                         if(user.balance > Number(process.env.USER_LOW_BALANCE) ||  user.balance < Number(process.env.USER_WILL_BLOCK)){break}
-                        if(event.telegram && event.telegramChat){
+                        if(event.tlgrm && event.telegramChat){
                             await sendTelegram(event.telegramChat, "Баланс близок к нулю")
                         }
                         if(event.email){
@@ -164,7 +165,7 @@ module.exports = (injects) => {
                         for (const mach of user.machines ){
                             if(mach.lastEncashment < (new Date().getTime() - 24*60*60*1000)){break}
                             if(!checkTime(event, "machine"+mach.id)){break}
-                            if(event.telegram && event.telegramChat){
+                            if(event.tlgrm && event.telegramChat){
                                 await sendTelegram(event.telegramChat, "Произведена инкассация на автомате:" + mach.number)
                             }
                             if(event.email){
@@ -177,7 +178,7 @@ module.exports = (injects) => {
                     case "USER_WILL_BLOCK":
                         if(user.balance > Number(process.env.USER_WILL_BLOCK)){break}
                         if(!checkTime(event, "user"+user.user_id)){break}
-                        if(event.telegram && event.telegramChat){
+                        if(event.tlgrm && event.telegramChat){
                             await sendTelegram(event.telegramChat, "Возможна блокировка по балансу")
                         }
                         if(event.email){
@@ -192,7 +193,7 @@ module.exports = (injects) => {
 
                             if(mach.lastSale < (new Date().getTime() - 24*60*60*1000)){break}
                             if(!checkTime(event, "machine"+mach.id)){break}
-                            if(event.telegram && event.telegramChat){
+                            if(event.tlgrm && event.telegramChat){
                                 await sendTelegram(event.telegramChat, "Не было продаж в течении суток на автомате:" + mach.number)
                             }
                             if(event.email){
@@ -211,8 +212,8 @@ module.exports = (injects) => {
 
             }
             if(user.msg){
-                logger.info(`Sending email to ${user.email}. Message: ${user.msg}`)
-                await sendEmail(user.email, user.msg)
+                logger.info(`Sending email to ${user.extraEmail}. Message: ${user.msg}`)
+                await sendEmail(user.extraEmail, user.msg)
             }
 
 

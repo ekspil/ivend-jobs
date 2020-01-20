@@ -138,7 +138,7 @@ module.exports = (injects) => {
 
                         for (const mach of user.machines ){
                             if(!checkTime(event, "machine"+mach.id)){break}
-                            if(mach.lostConnection < (new Date().getTime() - 24*60*60*1000)){break}
+                            if(mach.lostConnection > (new Date().getTime() - 24*60*60*1000)){break}
                             if(event.tlgrm && event.telegramChat){
                                 await sendTelegram(event.telegramChat, "Нет связи с контроллером на автомате:" + mach.number)
                             }
@@ -163,15 +163,15 @@ module.exports = (injects) => {
                     case "CONTROLLER_ENCASHMENT":
 
                         for (const mach of user.machines ){
-                            if(mach.lastEncashment < (new Date().getTime() - 24*60*60*1000)){break}
-                            if(!checkTime(event, "machine"+mach.id)){break}
+                            if(mach.lastEncashment > (new Date().getTime() - 24*60*60*1000)){break}
+                            if(!checkTime(event, "machine"+mach.id+mach.lastEncashment)){break}
                             if(event.tlgrm && event.telegramChat){
                                 await sendTelegram(event.telegramChat, "Произведена инкассация на автомате:" + mach.number)
                             }
                             if(event.email){
                                 user.msg =  user.msg +"<br>"+"Произведена инкассация на автомате:" + mach.number
                             }
-                            await setNotificationTime(event.type, "machine"+mach.id)
+                            await setNotificationTime(event.type, "machine"+mach.id+mach.lastEncashment)
                         }
 
                         break

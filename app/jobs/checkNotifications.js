@@ -165,7 +165,7 @@ module.exports = (injects) => {
                     case "CONTROLLER_ENCASHMENT":
 
                         for (const mach of user.machines ){
-                            logger.info(`Ищем инкассации. Машина ${mach.number}. Последняя инкассация ${mach.lastEncashment}. Время для сравнения: ${(new Date().getTime() - 24*60*60*1000)}`)
+                            logger.info(`Ищем инкассации. Машина ${mach.number} ${mach.name}. Последняя инкассация ${mach.lastEncashment}. Время для сравнения: ${(new Date().getTime() - 24*60*60*1000)}`)
                             if(mach.lastEncashment < (new Date().getTime() - 24*60*60*1000)){break}
                             if(!checkTime(event, "machine"+mach.id+mach.lastEncashment)){break}
                             if(event.tlgrm && event.telegramChat){

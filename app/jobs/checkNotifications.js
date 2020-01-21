@@ -214,15 +214,14 @@ module.exports = (injects) => {
 
             }
             if(user.msg){
+                const SPBTime = (new Date().getTime() + (1000*60*60*3))
+                const date = new Date(SPBTime)
 
-                var date = new Date()
-
-                var options = {
+                const options = {
                     year: "numeric",
                     month: "long",
                     day: "numeric",
                     weekday: "long",
-                    timezone: "europe/moscow",
                     hour: "numeric",
                     minute: "numeric",
                     second: "numeric"

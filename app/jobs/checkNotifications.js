@@ -214,6 +214,7 @@ module.exports = (injects) => {
 
             }
             if(user.msg){
+                user.msg =(new Date())+"</br><br>" + user.msg
                 logger.info(`Sending email to ${user.extraEmail}. Message: ${user.msg}`)
                 await sendEmail(user.extraEmail, user.msg)
             }

@@ -139,8 +139,8 @@ module.exports = (injects) => {
                     case "CONTROLLER_NO_CONNECTION":
 
                         for (const mach of user.machines ){
-                            if(!checkTime(event, "machine"+mach.id)){break}
-                            if(mach.lostConnection < (new Date().getTime() - 24*60*60*1000)){break}
+                            if(!checkTime(event, "machine"+mach.id)){continue}
+                            if(mach.lostConnection < (new Date().getTime() - 24*60*60*1000)){continue}
                             if(event.tlgrm && event.telegramChat){
                                 await sendTelegram(event.telegramChat, "Нет связи с контроллером на автомате:" + mach.number)
                             }
@@ -166,8 +166,8 @@ module.exports = (injects) => {
 
                         for (const mach of user.machines ){
                             logger.info(`Ищем инкассации. Машина ${mach.number} ${mach.name}. Последняя инкассация ${mach.lastEncashment}. Время для сравнения: ${(new Date().getTime() - 24*60*60*1000)}`)
-                            if(mach.lastEncashment < (new Date().getTime() - 24*60*60*1000)){break}
-                            if(!checkTime(event, "machine"+mach.id+mach.lastEncashment)){break}
+                            if(mach.lastEncashment < (new Date().getTime() - 24*60*60*1000)){continue}
+                            if(!checkTime(event, "machine"+mach.id+mach.lastEncashment)){continue}
                             if(event.tlgrm && event.telegramChat){
                                 await sendTelegram(event.telegramChat, "Произведена инкассация на автомате:" + mach.number)
                             }
@@ -194,8 +194,8 @@ module.exports = (injects) => {
 
                         for (const mach of user.machines ){
 
-                            if(mach.lastSale > (new Date().getTime() - 24*60*60*1000)){break}
-                            if(!checkTime(event, "machine"+mach.id)){break}
+                            if(mach.lastSale > (new Date().getTime() - 24*60*60*1000)){continue}
+                            if(!checkTime(event, "machine"+mach.id)){continue}
                             if(event.tlgrm && event.telegramChat){
                                 await sendTelegram(event.telegramChat, "Не было продаж в течении суток на автомате:" + mach.number)
                             }

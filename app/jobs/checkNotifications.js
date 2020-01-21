@@ -148,7 +148,7 @@ module.exports = (injects) => {
                             if(event.tlgrm && event.telegramChat){
 
                                 user.msgT =  `${user.msgT}
-                                Нет связи с контроллером на автомате: ${mach.name} ( ${mach.number} )`
+Нет связи с контроллером на автомате: ${mach.name} ( ${mach.number} )`
                             }
                             if(event.email){
                                 user.msg =  user.msg +"<br>"+"Нет связи с контроллером на автомате:" + mach.name + " ("+mach.number+")"
@@ -162,7 +162,7 @@ module.exports = (injects) => {
                         if(user.balance > Number(process.env.USER_LOW_BALANCE) ||  user.balance < Number(process.env.USER_WILL_BLOCK)){break}
                         if(event.tlgrm && event.telegramChat){
                             user.msgT =  `${user.msgT}
-                                Баланс близок к нулю`
+Баланс близок к нулю`
                         }
                         if(event.email){
                             user.msg =  user.msg +"<br>"+"Баланс близок к нулю"
@@ -176,7 +176,7 @@ module.exports = (injects) => {
                             if(!checkTime(event, "machine"+mach.id+mach.lastEncashment)){continue}
                             if(event.tlgrm && event.telegramChat){
                                 user.msgT =  `${user.msgT}
-                                Произведена инкассация на автомате: ${mach.name} ( ${mach.number} )`
+Произведена инкассация на автомате: ${mach.name} ( ${mach.number} )`
                             }
                             if(event.email){
                                 user.msg =  user.msg +"<br>"+"Произведена инкассация на автомате:" + mach.name + " ("+mach.number+")"
@@ -190,7 +190,7 @@ module.exports = (injects) => {
                         if(!checkTime(event, "user"+user.user_id)){break}
                         if(event.tlgrm && event.telegramChat){
                             user.msgT =  `${user.msgT}
-                                Возможна блокировка по балансу`
+Возможна блокировка по балансу`
                         }
                         if(event.email){
                             user.msg =  user.msg +"<br>"+"Возможна блокировка по балансу"
@@ -206,7 +206,7 @@ module.exports = (injects) => {
                             if(!checkTime(event, "machine"+mach.id)){continue}
                             if(event.tlgrm && event.telegramChat){
                                 user.msgT =  `${user.msgT}
-                                Нет продаж за последние сутки автомате: ${mach.name} ( ${mach.number} )`
+Нет продаж за последние сутки автомате: ${mach.name} ( ${mach.number} )`
                             }
                             if(event.email){
                                 user.msg =  user.msg +"<br>"+"Не было продаж в течении суток на автомате:" + mach.name + " ("+mach.number+")"

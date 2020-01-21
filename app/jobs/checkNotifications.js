@@ -142,10 +142,10 @@ module.exports = (injects) => {
                             if(!checkTime(event, "machine"+mach.id+mach.lostConnection)){continue}
                             if(mach.lostConnection < (new Date().getTime() - 24*60*60*1000)){continue}
                             if(event.tlgrm && event.telegramChat){
-                                await sendTelegram(event.telegramChat, "Нет связи с контроллером на автомате:" + mach.number)
+                                await sendTelegram(event.telegramChat, "Нет связи с контроллером на автомате:" + mach.name)
                             }
                             if(event.email){
-                                user.msg =  user.msg +"<br>"+"Нет связи с контроллером на автомате:" + mach.number
+                                user.msg =  user.msg +"<br>"+"Нет связи с контроллером на автомате:" + mach.name
                             }
                             await setNotificationTime(event.type, "machine"+mach.id+mach.lostConnection)
                         }
@@ -168,10 +168,10 @@ module.exports = (injects) => {
                             if(mach.lastEncashment < (new Date().getTime() - 24*60*60*1000)){continue}
                             if(!checkTime(event, "machine"+mach.id+mach.lastEncashment)){continue}
                             if(event.tlgrm && event.telegramChat){
-                                await sendTelegram(event.telegramChat, "Произведена инкассация на автомате:" + mach.number)
+                                await sendTelegram(event.telegramChat, "Произведена инкассация на автомате:" + mach.name)
                             }
                             if(event.email){
-                                user.msg =  user.msg +"<br>"+"Произведена инкассация на автомате:" + mach.number
+                                user.msg =  user.msg +"<br>"+"Произведена инкассация на автомате:" + mach.name
                             }
                             await setNotificationTime(event.type, "machine"+mach.id+mach.lastEncashment)
                         }
@@ -196,10 +196,10 @@ module.exports = (injects) => {
                             if(mach.lastSale > (new Date().getTime() - 24*60*60*1000)){continue}
                             if(!checkTime(event, "machine"+mach.id)){continue}
                             if(event.tlgrm && event.telegramChat){
-                                await sendTelegram(event.telegramChat, "Не было продаж в течении суток на автомате:" + mach.number)
+                                await sendTelegram(event.telegramChat, "Не было продаж в течении суток на автомате:" + mach.name)
                             }
                             if(event.email){
-                                user.msg =  user.msg +"<br>"+"Не было продаж в течении суток на автомате:" + mach.number
+                                user.msg =  user.msg +"<br>"+"Не было продаж в течении суток на автомате:" + mach.name
                             }
                             await setNotificationTime(event.type, "machine"+mach.id)
                         }

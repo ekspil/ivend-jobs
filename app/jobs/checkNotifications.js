@@ -133,7 +133,6 @@ module.exports = (injects) => {
                 }
                 if(!user.extraEmail && event.extraEmail){
                     user.extraEmail = event.extraEmail
-                    logger.info(user.extraEmail)
                 }
 
                 switch (event.type){

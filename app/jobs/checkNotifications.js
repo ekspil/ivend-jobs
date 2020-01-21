@@ -214,7 +214,21 @@ module.exports = (injects) => {
 
             }
             if(user.msg){
-                user.msg =(new Date())+"</br><br>" + user.msg
+
+                var date = new Date()
+
+                var options = {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                    weekday: "long",
+                    timezone: "europe/moscow",
+                    hour: "numeric",
+                    minute: "numeric",
+                    second: "numeric"
+                }
+
+                user.msg =(date.toLocaleString("ru", options))+"</br><br>" + user.msg
                 logger.info(`Sending email to ${user.extraEmail}. Message: ${user.msg}`)
                 await sendEmail(user.extraEmail, user.msg)
             }

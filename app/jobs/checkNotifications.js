@@ -88,6 +88,7 @@ module.exports = (injects) => {
             user.balance = Number(balance.sum)
             user.machines = []
             user.msg=""
+            user.msgT=""
 
 
 
@@ -134,6 +135,9 @@ module.exports = (injects) => {
                 if(!user.extraEmail && event.extraEmail){
                     user.extraEmail = event.extraEmail
                 }
+                if(!user.telegramChat && event.telegramChat){
+                    user.telegramChat = event.telegramChat
+                }
 
                 switch (event.type){
                     case "CONTROLLER_NO_CONNECTION":
@@ -142,7 +146,8 @@ module.exports = (injects) => {
                             if(!checkTime(event, "machine"+mach.id+mach.lostConnection)){continue}
                             if(mach.lostConnection < (new Date().getTime() - 24*60*60*1000)){continue}
                             if(event.tlgrm && event.telegramChat){
-                                await sendTelegram(event.telegramChat, "Нет связи с контроллером на автомате:" + mach.name)
+
+                                user.msgT =  user.msgT +"<br>"+"Нет связи с контроллером на автомате:" + mach.name
                             }
                             if(event.email){
                                 user.msg =  user.msg +"<br>"+"Нет связи с контроллером на автомате:" + mach.name
@@ -155,7 +160,7 @@ module.exports = (injects) => {
                         if(!checkTime(event, "user"+user.user_id)){break}
                         if(user.balance > Number(process.env.USER_LOW_BALANCE) ||  user.balance < Number(process.env.USER_WILL_BLOCK)){break}
                         if(event.tlgrm && event.telegramChat){
-                            await sendTelegram(event.telegramChat, "Баланс близок к нулю")
+                            user.msgT =  user.msgT +"<br>"+"Баланс близок к нулю"
                         }
                         if(event.email){
                             user.msg =  user.msg +"<br>"+"Баланс близок к нулю"
@@ -168,7 +173,7 @@ module.exports = (injects) => {
                             if(mach.lastEncashment < (new Date().getTime() - 24*60*60*1000)){continue}
                             if(!checkTime(event, "machine"+mach.id+mach.lastEncashment)){continue}
                             if(event.tlgrm && event.telegramChat){
-                                await sendTelegram(event.telegramChat, "Произведена инкассация на автомате:" + mach.name)
+                                user.msgT =  user.msgT +"<br>"+"Произведена инкассация на автомате:" + mach.name
                             }
                             if(event.email){
                                 user.msg =  user.msg +"<br>"+"Произведена инкассация на автомате:" + mach.name
@@ -181,7 +186,7 @@ module.exports = (injects) => {
                         if(user.balance > Number(process.env.USER_WILL_BLOCK)){break}
                         if(!checkTime(event, "user"+user.user_id)){break}
                         if(event.tlgrm && event.telegramChat){
-                            await sendTelegram(event.telegramChat, "Возможна блокировка по балансу")
+                            user.msgT =  user.msgT +"<br>"+"Возможна блокировка по балансу"
                         }
                         if(event.email){
                             user.msg =  user.msg +"<br>"+"Возможна блокировка по балансу"
@@ -196,7 +201,7 @@ module.exports = (injects) => {
                             if(mach.lastSale > (new Date().getTime() - 24*60*60*1000)){continue}
                             if(!checkTime(event, "machine"+mach.id)){continue}
                             if(event.tlgrm && event.telegramChat){
-                                await sendTelegram(event.telegramChat, "Не было продаж в течении суток на автомате:" + mach.name)
+                                user.msgT =  user.msgT +"<br>"+"Не было продаж в течении суток на автомате:" + mach.name
                             }
                             if(event.email){
                                 user.msg =  user.msg +"<br>"+"Не было продаж в течении суток на автомате:" + mach.name
@@ -230,6 +235,25 @@ module.exports = (injects) => {
                 user.msg =(date.toLocaleString("ru", options))+"</br><br>" + user.msg
                 logger.info(`Sending email to ${user.extraEmail}. Message: ${user.msg}`)
                 await sendEmail(user.extraEmail, user.msg)
+            }
+            if(user.msgT){
+                const SPBTime = (new Date().getTime() + (1000*60*60*3))
+                const date = new Date(SPBTime)
+
+                const options = {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                    weekday: "long",
+                    hour: "numeric",
+                    minute: "numeric",
+                    second: "numeric"
+                }
+
+                user.msg =(date.toLocaleString("ru", options))+"</br><br>" + user.msgT
+                logger.info(`Sending telegram to ${user.telegramChat}. Message: ${user.msgT}`)
+
+                await sendTelegram(user.telegramChat, user.msgT)
             }
 
 

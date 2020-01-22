@@ -5,3 +5,7 @@
 # 1.0.1 - Release
 
 * Added centralized logging
+
+# 1.0.2 - Release
+
+* Added check notification events

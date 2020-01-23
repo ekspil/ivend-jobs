@@ -13,3 +13,7 @@
 # 1.0.3 - Release
 
 * Added check notification transacting
+
+# 1.0.4 - Release
+
+* Fix Errors

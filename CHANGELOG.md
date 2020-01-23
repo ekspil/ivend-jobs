@@ -9,3 +9,7 @@
 # 1.0.2 - Release
 
 * Added check notification events
+
+# 1.0.3 - Release
+
+* Added check notification transacting

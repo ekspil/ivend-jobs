@@ -24,8 +24,10 @@ const jobs = (injects) => {
                     logger.error("Failed to check payment requests for updated statuses")
                     logger.error(e)
                 })
-        })        // Every 10 minutes
-        cron.schedule("*/10 * * * *", () => {
+        })
+
+        // Every 11 minutes
+        cron.schedule("*/11 * * * *", () => {
             checkNotificationsJob()
                 .then(log => logger.info(log))
                 .catch((e) => {

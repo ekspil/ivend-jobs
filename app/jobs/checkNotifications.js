@@ -57,8 +57,9 @@ module.exports = (injects) => {
 
 
     const {knex} = injects
-    return knex.transaction(async (trx) => {
-        return async () => {
+
+    return async () => {
+        return knex.transaction(async (trx) => {
             logger.info("Запуск проверки нотификаций")
             const users = await knex("users")
                 .transacting(trx)
@@ -291,7 +292,8 @@ ${user.msgT}`
 
             }
             return "Notifications sent successfully"
-        }
-    })
+        })
+    }
+
 
 }

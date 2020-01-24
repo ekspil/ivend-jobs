@@ -21,3 +21,7 @@
 # 1.0.5 - Release
 
 * Delete spam logs
+
+# 1.0.6 - Release
+
+* Disable sending tu undefined email

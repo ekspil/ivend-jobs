@@ -161,7 +161,7 @@ module.exports = (injects) => {
                                     user.msgT = `${user.msgT}
 Нет связи с контроллером на автомате: ${mach.name} ( ${mach.number} )`
                                 }
-                                if (event.email) {
+                                if (event.email  && event.extraEmail) {
                                     user.msg = user.msg + "<br>" + "Нет связи с контроллером на автомате:" + mach.name + " (" + mach.number + ")"
                                 }
                                 await setNotificationTime(event.type, "machine" + mach.id + mach.lostConnection)
@@ -179,7 +179,7 @@ module.exports = (injects) => {
                                 user.msgT = `${user.msgT}
 Баланс близок к нулю`
                             }
-                            if (event.email) {
+                            if (event.email  && event.extraEmail) {
                                 user.msg = user.msg + "<br>" + "Баланс близок к нулю"
                             }
                             await setNotificationTime(event.type, "user" + user.user_id)
@@ -197,7 +197,7 @@ module.exports = (injects) => {
                                     user.msgT = `${user.msgT}
 Произведена инкассация на автомате: ${mach.name} ( ${mach.number} )`
                                 }
-                                if (event.email) {
+                                if (event.email  && event.extraEmail) {
                                     user.msg = user.msg + "<br>" + "Произведена инкассация на автомате:" + mach.name + " (" + mach.number + ")"
                                 }
                                 await setNotificationTime(event.type, "machine" + mach.id + mach.lastEncashment)
@@ -215,7 +215,7 @@ module.exports = (injects) => {
                                 user.msgT = `${user.msgT}
 Возможна блокировка по балансу`
                             }
-                            if (event.email) {
+                            if (event.email  && event.extraEmail) {
                                 user.msg = user.msg + "<br>" + "Возможна блокировка по балансу"
                             }
                             await setNotificationTime(event.type, "user" + user.user_id)
@@ -235,7 +235,7 @@ module.exports = (injects) => {
                                     user.msgT = `${user.msgT}
 Нет продаж за последние сутки автомате: ${mach.name} ( ${mach.number} )`
                                 }
-                                if (event.email) {
+                                if (event.email  && event.extraEmail) {
                                     user.msg = user.msg + "<br>" + "Не было продаж в течении суток на автомате:" + mach.name + " (" + mach.number + ")"
                                 }
                                 await setNotificationTime(event.type, "machine" + mach.id)

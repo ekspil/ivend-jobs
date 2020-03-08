@@ -238,6 +238,7 @@ module.exports = (injects) => {
                                 if (event.email  && event.extraEmail) {
                                     user.msg = user.msg + "<br>" + "Не было продаж в течении суток на автомате:" + mach.name + " (" + mach.number + ")"
                                 }
+                                await redis.set("machine_error_" + mach.id, `NO SALES 24H`, "px", 31 * 24 * 60 * 60 * 1000)
                                 await setNotificationTime(event.type, "machine" + mach.id)
                             }
 

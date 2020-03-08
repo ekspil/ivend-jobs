@@ -4,6 +4,8 @@ module.exports = (injects) => {
     const {knex, redis} = injects
 
     return async () => {
+
+        logger.info(`Started checking controllers  lost connection`)
         const controllers = await knex("controllers")
             .select("machines.id as machine_id", "controller_states.registration_time", "controllers.connected as connected", "controllers.uid as uid", "controllers.id as controller_id")
             .leftJoin("controller_states", "controllers.last_state_id", "controller_states.id")
@@ -18,7 +20,6 @@ module.exports = (injects) => {
         for (const controller of controllers) {
             await knex.transaction(async (trx) => {
                 if (!controller.machine_id) {
-                    logger.warning(`Controller ${controller.uid} does not have applied machine, cannot check status`)
                     return
                 }
 
@@ -36,7 +37,6 @@ module.exports = (injects) => {
                 const expiryDate = new Date(lastCommandTime + Number(process.env.CONTROLLER_CONNECTION_TIMEOUT_MINUTES) * 60 * 1000)
 
                 if (now > expiryDate) {
-                    logger.info(`Controller ${controller.uid} lost connection`)
 
                     // set connected false
                     await knex("controllers")

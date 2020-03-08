@@ -18,14 +18,16 @@ const jobs = (injects) => {
 
     const start = () => {
         // Every minute
-        cron.schedule("*/1 * * * *", () => {
+        cron.schedule("*/2 * * * *", () => {
             checkControllerConnectionJob()
                 .catch((e) => {
                     logger.error("Failed to check payment requests for updated statuses")
                     logger.error(e)
                 })
-        })        // Every 10 minutes
-        cron.schedule("*/5 * * * *", () => {
+        })
+
+        // Every 11 minutes
+        cron.schedule("*/15 * * * *", () => {
             checkNotificationsJob()
                 .then(log => logger.info(log))
                 .catch((e) => {

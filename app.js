@@ -1,4 +1,5 @@
 require("dotenv").config()
+const Redis = require("ioredis")
 const logger = require("my-custom-logger")
 const fs = require("fs")
 const version = require("./package.json").version
@@ -14,7 +15,13 @@ const knex = require("knex")({
     }
 })
 
-const jobs = require("./app/jobs")({knex})
+const redis = new Redis({
+    port: 6379,
+    host: process.env.REDIS_HOST,
+    password: process.env.REDIS_PASSWORD,
+})
+
+const jobs = require("./app/jobs")({knex, redis})
 
 jobs.start()
 

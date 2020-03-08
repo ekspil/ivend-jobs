@@ -56,7 +56,7 @@ module.exports = (injects) => {
 
 
 
-    const {knex} = injects
+    const {knex, redis} = injects
 
     return async () => {
         logger.info("Запуск проверки нотификаций")
@@ -192,13 +192,16 @@ module.exports = (injects) => {
                         for (const mach of user.machines ){
 
                             if(mach.lastSale < (new Date().getTime() - 24*60*60*1000)){break}
-                            if(!checkTime(event, "machine"+mach.id)){break}
+                            if(!checkTime(event, "machine"+mach.id)){
+                                break}
                             if(event.tlgrm && event.telegramChat){
+
                                 await sendTelegram(event.telegramChat, "Не было продаж в течении суток на автомате:" + mach.number)
                             }
                             if(event.email){
                                 user.msg =  user.msg +"<br>"+"Не было продаж в течении суток на автомате:" + mach.number
                             }
+                            await redis.set("machine_error_" + mach.id, `NO SALES 24H`, "px", 31 * 24 * 60 * 60 * 1000)
                             await setNotificationTime(event.type, "machine"+mach.id)
                         }
 

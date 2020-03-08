@@ -1,7 +1,7 @@
 const logger = require("my-custom-logger")
 
 module.exports = (injects) => {
-    const {knex} = injects
+    const {knex, redis} = injects
 
     return async () => {
         const controllers = await knex("controllers")
@@ -45,6 +45,10 @@ module.exports = (injects) => {
                             connected: false
                         })
                         .transacting(trx)
+
+                    // redis set status
+
+                    await redis.set("machine_error_" + controller.machine_id, `NO CONNECTION`, "px", 24 * 60 * 60 * 1000)
 
                     // add machinelog
                     await knex("machine_logs")

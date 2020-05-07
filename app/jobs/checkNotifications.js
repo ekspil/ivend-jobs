@@ -80,6 +80,12 @@ module.exports = (injects) => {
                     machine.lastSale = lastSale ? lastSale.created_at.getTime() : 10000000
                     machine.lastEncashment = lastEncashment ? lastEncashment.created_at.getTime() : 10000000
                     machine.lostConnection = lastLostConnection ? lastLostConnection.created_at.getTime() : 10000000
+
+                    machine.kktStatus = await redis.get("kkt_status_" + machine.id)
+                    machine.terminalStatus = await redis.get("terminal_status_" + machine.id)
+                    machine.banknoteCollectorStatus = await redis.get("machine_banknote_collector_status_" + machine.id)
+
+
                     user.machines.push(machine)
 
                 }
@@ -115,6 +121,69 @@ module.exports = (injects) => {
                                     user.msg = user.msg + "<br>" + "Нет связи с контроллером на автомате:" + mach.name + " (" + mach.number + ")"
                                 }
                                 await setNotificationTime(event.type, "machine" + mach.id + mach.lostConnection)
+                            }
+
+                            break
+                        case "KKT_ERROR":
+
+                            for (const mach of user.machines) {
+                                if (!checkTime(event, "KKT_ERROR" + mach.id)) {
+                                    continue
+                                }
+                                if(!mach.kktStatus || mach.kktStatus !== "ERROR" || mach.kktStatus !== "24H" ){
+                                    continue
+                                }
+                                if (event.tlgrm && event.telegramChat) {
+
+                                    user.msgT = `${user.msgT}
+Не работает ККТ на автомате: ${mach.name} ( ${mach.number} )`
+                                }
+                                if (event.email  && event.extraEmail) {
+                                    user.msg = user.msg + "<br>" + "Не работает ККТ на автомате:" + mach.name + " (" + mach.number + ")"
+                                }
+                                await setNotificationTime(event.type, "KKT_ERROR" + mach.id)
+                            }
+
+                            break
+                        case "PINPAD_ERROR":
+
+                            for (const mach of user.machines) {
+                                if (!checkTime(event, "PINPAD_ERROR" + mach.id)) {
+                                    continue
+                                }
+                                if(!mach.terminalStatus || mach.terminalStatus !== "ERROR" || mach.terminalStatus !== "24H" ){
+                                    continue
+                                }
+                                if (event.tlgrm && event.telegramChat) {
+
+                                    user.msgT = `${user.msgT}
+Не работает Терминал на автомате: ${mach.name} ( ${mach.number} )`
+                                }
+                                if (event.email  && event.extraEmail) {
+                                    user.msg = user.msg + "<br>" + "Не работает Терминал на автомате:" + mach.name + " (" + mach.number + ")"
+                                }
+                                await setNotificationTime(event.type, "PINPAD_ERROR" + mach.id)
+                            }
+
+                            break
+                        case "CASH_ACCEPTOR_ERROR":
+
+                            for (const mach of user.machines) {
+                                if (!checkTime(event, "CASH_ACCEPTOR_ERROR" + mach.id)) {
+                                    continue
+                                }
+                                if(!mach.banknoteCollectorStatus || mach.banknoteCollectorStatus !== "ERROR" || mach.banknoteCollectorStatus !== "24H" ){
+                                    continue
+                                }
+                                if (event.tlgrm && event.telegramChat) {
+
+                                    user.msgT = `${user.msgT}
+Не работает Купюроприемник на автомате: ${mach.name} ( ${mach.number} )`
+                                }
+                                if (event.email  && event.extraEmail) {
+                                    user.msg = user.msg + "<br>" + "Не работает Купюроприемник на автомате:" + mach.name + " (" + mach.number + ")"
+                                }
+                                await setNotificationTime(event.type, "CASH_ACCEPTOR_ERROR" + mach.id)
                             }
 
                             break

@@ -26,6 +26,38 @@ class Services {
 
 
     }
+    async getLastNews(){
+        return this.knex.transaction(async trx => {
+            const news = await this.knex("news")
+                .transacting(trx)
+                .where("new", 0)
+                .andWhere("active", 1)
+                .select("id", "text", "header")
+
+            const ids = news.map(item => item.id)
+
+            await this.knex("news")
+                .transacting(trx)
+                .whereIn("id", ids)
+                .update({
+                    new: 0
+                })
+
+            return news.reduce((acc, n) => {
+                acc.tlgrm =  acc.tlgrm + `
+${n.header}
+${n.text}
+---------------
+                   
+                   `
+                acc.mail = acc.mail + `
+<h2>${n.header}</h2>
+<p>${n.text}</p>
+<br><br>`
+            }, {tlgrm: ``, mail: ``})
+        })
+        
+    }
     getPeriod(value){    
         const period = {}
         let date = new Date()

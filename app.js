@@ -4,6 +4,7 @@ const logger = require("my-custom-logger")
 const fs = require("fs")
 const version = require("./package.json").version
 
+
 const knex = require("knex")({
     client: "pg",
     connection: {

@@ -1,5 +1,5 @@
 const {sendEmail, sendTelegram} = require("./notificationModules/utils")
-const Services = require("./app/jobs/services/notificationServices")
+const Services = require("./services/notificationServices")
 const msgs = require("./notificationModules/messages")
 
 const daylyServices = [

@@ -24,4 +24,8 @@
 
 # 1.0.6 - Release
 
-* Disable sending tu undefined email
+* Disable sending to undefined email
+
+# 1.0.7 - Release
+
+* Add new events checking

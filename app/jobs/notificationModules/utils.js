@@ -1,6 +1,5 @@
 
 const fetch = require("node-fetch")
-const logger = require("my-custom-logger")
 
 const notificationTime = {}
 
@@ -39,8 +38,6 @@ const sendTelegram = async (chat, msg) => {
 }
 
 const sendEmail = async (email, msg) => {
-    logger.info(msg)
-    logger.info(email)
     const body = JSON.stringify({email, msg})
     const url = `${process.env.NOTIFICATION_URL}/api/v1/template/EMAIL_MSG`
     const method = "POST"

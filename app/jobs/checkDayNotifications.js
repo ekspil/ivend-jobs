@@ -1,6 +1,7 @@
 const {sendEmail, sendTelegram} = require("./notificationModules/utils")
 const Services = require("./services/notificationServices")
 const msgs = require("./notificationModules/messages")
+const logger = require("my-custom-logger")
 
 const daylyServices = [
     "GET_DAY_SALES",
@@ -14,18 +15,18 @@ module.exports = (injects) => {
     let sum
 
     return async () =>{
-        const news = await services.getLastNews()
-        return knex.transacting(async trx => {
+        logger.info("day notification job started")
+        return knex.transaction(async (trx) => {
             const users = await knex("users")
                 .transacting(trx)
                 .select("id as user_id", "phone", "email" )
-
+            const news = await services.getLastNews(trx)
             for (let user of users){
                 const dayEvents = await knex("notification_settings")
-                    .transaction(trx)
+                    .transacting(trx)
                     .select("type", "email", "tlgrm", "extraEmail", "telegramChat")
                     .whereIn("type", daylyServices)
-                    .andWhere("user_id", user.id)
+                    .andWhere("user_id", user.user_id)
                     .andWhere(function(){
                         this.where("email", true).orWhere("tlgrm", true)
                     })
@@ -34,7 +35,7 @@ module.exports = (injects) => {
                 for( let event of dayEvents){
                     switch(event.type){
                         case "GET_DAY_SALES":
-                            sum = await services.getSalesSum(user, period)
+                            sum = await services.getSalesSum(user, period, trx)
                             if(event.telegramChat && event.tlgrm) await sendTelegram(event.telegramChat, msgs.report(sum, "день"))
                             if(event.extraEmail && event.email) await sendEmail(event.extraEmail, msgs.report(sum, "день"))
                             break
@@ -49,7 +50,10 @@ module.exports = (injects) => {
                 }
 
 
+
             }
+            logger.info("day notification job success")
         })
+
     }
 }

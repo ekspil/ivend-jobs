@@ -4,58 +4,54 @@ class Services {
         this.redis = redis
         this.getSalesSum = this.getSalesSum.bind(this)
     }
-    async getSalesSum(user, period){
-        return this.knex.transaction(async trx => {
-            const machines = await this.knex("machines")
-                .transacting(trx)
-                .where("user_id", user.id)
-                .select("id")
-            const machineNumbers = machines.map(machine => machine.id)
-            const allSales = await this.knex("sales")
-                .transacting(trx)
-                .select("type", "price", "created_at", "machine_id")
-                .whereIn("machine_id", machineNumbers)
-                .andWhere(function(){
-                    this.where("created_at", ">", period.from).andWhere("created_at", "<", period.to)
-                })
-            return allSales.reduce((acc, item)=>{
-                return acc + item.price
-            }, 0)
-        })
-
-
+    async getSalesSum(user, period, trx){
+        const machines = await this.knex("machines")
+            .transacting(trx)
+            .where("user_id", user.user_id)
+            .select("id")
+        const machineNumbers = machines.map(machine => machine.id)
+        const allSales = await this.knex("sales")
+            .transacting(trx)
+            .select("type", "price", "created_at", "machine_id")
+            .whereIn("machine_id", machineNumbers)
+            .andWhere(function(){
+                this.where("created_at", ">", new Date(period.from)).andWhere("created_at", "<", new Date(period.to))
+            })
+        return allSales.reduce((acc, item)=>{
+            return Number(acc) + Number(item.price)
+        }, 0)
 
     }
-    async getLastNews(){
-        return this.knex.transaction(async trx => {
-            const news = await this.knex("news")
-                .transacting(trx)
-                .where("new", 0)
-                .andWhere("active", 1)
-                .select("id", "text", "header")
+    async getLastNews(trx){
+        const news = await this.knex("news")
+            .transacting(trx)
+            .where("new", 1)
+            .andWhere("active", 1)
+            .select("id", "text", "header")
 
-            const ids = news.map(item => item.id)
+        const ids = news.map(item => item.id)
 
-            await this.knex("news")
-                .transacting(trx)
-                .whereIn("id", ids)
-                .update({
-                    new: 0
-                })
+        await this.knex("news")
+            .transacting(trx)
+            .whereIn("id", ids)
+            .update({
+                new: 0
+            })
 
-            return news.reduce((acc, n) => {
-                acc.tlgrm =  acc.tlgrm + `
+        return news.reduce((acc, n) => {
+            acc.tlgrm =  acc.tlgrm + `
 ${n.header}
 ${n.text}
 ---------------
                    
                    `
-                acc.mail = acc.mail + `
+            acc.mail = acc.mail + `
 <h2>${n.header}</h2>
 <p>${n.text}</p>
 <br><br>`
-            }, {tlgrm: ``, mail: ``})
-        })
+            return acc
+        }, {tlgrm: ``, mail: ``})
+     
         
     }
     getPeriod(value){    

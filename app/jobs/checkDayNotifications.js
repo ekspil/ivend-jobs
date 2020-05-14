@@ -40,6 +40,7 @@ module.exports = (injects) => {
                             if(event.extraEmail && event.email) await sendEmail(event.extraEmail, msgs.report(sum, "день"))
                             break
                         case "GET_NEWS":
+                            if (!news) break
                             if(event.telegramChat && event.tlgrm) await sendTelegram(event.telegramChat, news.tlgrm)
                             if(event.extraEmail && event.email) await sendEmail(event.extraEmail, news.mail)
                             break

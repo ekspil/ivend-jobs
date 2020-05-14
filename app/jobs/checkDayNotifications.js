@@ -21,6 +21,7 @@ module.exports = (injects) => {
                 .transacting(trx)
                 .select("id as user_id", "phone", "email" )
             const news = await services.getLastNews(trx)
+
             for (let user of users){
                 const dayEvents = await knex("notification_settings")
                     .transacting(trx)
@@ -40,7 +41,7 @@ module.exports = (injects) => {
                             if(event.extraEmail && event.email) await sendEmail(event.extraEmail, msgs.report(sum, "день"))
                             break
                         case "GET_NEWS":
-                            if (news.length === 0) break
+                            if (news.mail === "") break
                             if(event.telegramChat && event.tlgrm) await sendTelegram(event.telegramChat, news.tlgrm)
                             if(event.extraEmail && event.email) await sendEmail(event.extraEmail, news.mail)
                             break

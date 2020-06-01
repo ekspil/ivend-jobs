@@ -35,15 +35,21 @@ module.exports = (injects) => {
                 const lastCommandTime = Math.max(controller.registration_time.getTime(), (sale ? sale.created_at.getTime() : null))
 
                 const expiryDate = new Date(lastCommandTime + Number(process.env.CONTROLLER_CONNECTION_TIMEOUT_MINUTES) * 60 * 1000)
+                const expiryDateMonth = new Date(lastCommandTime + 30 * 24 * 60 * 60 * 1000)
 
                 if (now > expiryDate) {
+
+                    const update = {
+                        connected: false
+                    }
+                    if(now > expiryDateMonth) {
+                        update.status = "DISABLED"
+                    }
 
                     // set connected false
                     await knex("controllers")
                         .where("id", controller.controller_id)
-                        .update({
-                            connected: false
-                        })
+                        .update(update)
                         .transacting(trx)
 
                     // redis set status

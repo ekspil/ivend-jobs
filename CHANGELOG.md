@@ -29,3 +29,7 @@
 # 1.0.7 - Release
 
 * Add new events checking
+
+# 1.1.0 - Release
+
+* Add week, month jobs

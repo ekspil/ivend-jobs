@@ -37,13 +37,17 @@ module.exports = (injects) => {
                 const expiryDateMonth = new Date(lastCommandTime + 30 * 24 * 60 * 60 * 1000)
 
                 if (now > expiryDate) {
-
+                    let check = 0
                     const update = {
                         connected: false
                     }
                     if(now > expiryDateMonth) {
+                        check = 1                    
 
                         update.status = "DISABLED"
+                    }
+                    if(!controller.connected && check === 0){
+                        return
                     }
                     // set connected false
                     await knex("controllers")

@@ -11,8 +11,7 @@ module.exports = (injects) => {
             .leftJoin("controller_states", "controllers.last_state_id", "controller_states.id")
             .leftJoin("machines", "machines.controller_id", "controllers.id")
             .where({
-                status: "ENABLED",
-                connected: true
+                status: "ENABLED"
             })
             // we already have some controller states
             .whereNotNull("controller_states.registration_time")
@@ -43,9 +42,9 @@ module.exports = (injects) => {
                         connected: false
                     }
                     if(now > expiryDateMonth) {
+
                         update.status = "DISABLED"
                     }
-
                     // set connected false
                     await knex("controllers")
                         .where("id", controller.controller_id)
@@ -53,9 +52,7 @@ module.exports = (injects) => {
                         .transacting(trx)
 
                     // redis set status
-
                     await redis.set("machine_error_" + controller.machine_id, `NO CONNECTION`, "px", 24 * 60 * 60 * 1000)
-
                     // add machinelog
                     await knex("machine_logs")
                         .insert({

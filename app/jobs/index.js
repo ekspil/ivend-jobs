@@ -24,7 +24,7 @@ const jobs = (injects) => {
 
     const start = () => {
         // Every minute
-        cron.schedule("*/2 * * * *", () => {
+        cron.schedule("*/10 * * * *", () => {
             checkControllerConnectionJob()
                 .catch((e) => {
                     logger.error("Failed to check payment requests for updated statuses")

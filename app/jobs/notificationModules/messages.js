@@ -1,6 +1,7 @@
 module.exports = {
-    report: function(sum, period){
-        return ` Отчет за прошлый(ю) ${period}:
+    report: function(sum, period, companyName){
+        return ` Компания: ${companyName}
+Отчет за прошлый(ю) ${period}:
 Продажи составили ${sum} рублей.`
     }
 }

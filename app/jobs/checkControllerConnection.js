@@ -57,6 +57,7 @@ module.exports = (injects) => {
 
                     // redis set status
                     await redis.set("machine_error_" + controller.machine_id, `NO CONNECTION`, "px", 24 * 60 * 60 * 1000)
+                    await redis.set("machine_error_time_" + controller.machine_id, `${(new Date()).getTime()}`, "px", 24 * 60 * 60 * 1000)
                     // add machinelog
                     await knex("machine_logs")
                         .insert({

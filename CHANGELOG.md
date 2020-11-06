@@ -33,3 +33,7 @@
 # 1.1.0 - Release
 
 * Add week, month jobs
+
+# 1.1.1 - Hotfix
+
+* Add week, month jobs

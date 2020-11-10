@@ -37,3 +37,7 @@
 # 1.1.1 - Hotfix
 
 * Add week, month jobs
+
+# 1.1.2 - Hotfix
+
+* Small fixes

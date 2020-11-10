@@ -11,10 +11,11 @@ const daylyServices = [
 module.exports = (injects) => {
     const services = new Services(injects)
     const {knex} = injects
-    const period = services.getPeriod("day")
+
     let sum
 
     return async () =>{
+        const period = services.getPeriod("day")
         logger.info("day notification job started")
         return knex.transaction(async (trx) => {
             const users = await knex("users")
@@ -23,6 +24,7 @@ module.exports = (injects) => {
             const news = await services.getLastNews(trx)
 
             for (let user of users){
+
                 const dayEvents = await knex("notification_settings")
                     .transacting(trx)
                     .select("type", "email", "tlgrm", "extraEmail", "telegramChat")

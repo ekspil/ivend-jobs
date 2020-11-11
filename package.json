@@ -13,7 +13,7 @@
     "dotenv": "^7.0.0",
     "ioredis": "^4.16.0",
     "knex": "^0.16.3",
-    "my-custom-logger": "^1.0.2",
+    "my-custom-logger": "^1.0.3",
     "node-cron": "^2.0.3",
     "node-fetch": "^2.6.0",
     "pg": "^7.8.0"

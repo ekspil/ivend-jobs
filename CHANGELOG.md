@@ -55,3 +55,7 @@
 # 1.1.5 - Hotfix
 
 * Small fixes
+
+# 1.1.6 - Hotfix
+
+* Small fixes

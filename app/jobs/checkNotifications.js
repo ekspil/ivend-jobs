@@ -42,13 +42,14 @@ module.exports = (injects) => {
 
                 if(!balance){
                     [balance] = await knex("transactions")
-                      .transacting(trx)
-                      .sum("amount")
-                      .where({
-                          user_id: user.user_id
-                      })
+                        .transacting(trx)
+                        .sum("amount")
+                        .where({
+                            user_id: user.user_id
+                        })
 
                 }
+
 
                 user.notifications = notifications
                 user.balance = Number(balance.sum)

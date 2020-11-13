@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
       - name: graphql
-        image: registry.gitlab.com/pshenmic/ivend/jobs:1.1.4
+        image: registry.gitlab.com/pshenmic/ivend/jobs:1.1.5
         readinessProbe:
           exec:
             command:

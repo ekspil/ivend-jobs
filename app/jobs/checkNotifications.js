@@ -33,12 +33,23 @@ module.exports = (injects) => {
                     .where({
                         user_id: user.user_id
                     })
-                const balance = await knex("temps")
+                const [balance] = await knex("temps")
                     .transacting(trx)
                     .select("amount as sum")
                     .where({
                         user_id: user.user_id
                     })
+
+                if(!balance){
+                    [balance] = await knex("transactions")
+                      .transacting(trx)
+                      .sum("amount")
+                      .where({
+                          user_id: user.user_id
+                      })
+
+                }
+
                 user.notifications = notifications
                 user.balance = Number(balance.sum)
                 user.machines = []

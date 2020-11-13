@@ -45,3 +45,8 @@
 # 1.1.3 - Hotfix
 
 * Small fixes
+
+
+# 1.1.4 - Hotfix
+
+* Small fixes

@@ -6,18 +6,20 @@ module.exports = (injects) => {
     return async () => {
 
         logger.info(`Started checking controllers  lost connection`)
-        const controllers = await knex("controllers")
-            .select("machines.id as machine_id", "controller_states.registration_time", "controllers.connected as connected", "controllers.uid as uid", "controllers.id as controller_id")
-            .leftJoin("controller_states", "controllers.last_state_id", "controller_states.id")
-            .leftJoin("machines", "machines.controller_id", "controllers.id")
-            .where({
-                status: "ENABLED"
-            })
+        await knex.transaction(async (trx) => {
+            const controllers = await knex("controllers")
+                .transacting(trx)
+                .select("machines.id as machine_id", "controller_states.registration_time", "controllers.connected as connected", "controllers.uid as uid", "controllers.id as controller_id")
+                .leftJoin("controller_states", "controllers.last_state_id", "controller_states.id")
+                .leftJoin("machines", "machines.controller_id", "controllers.id")
+                .where({
+                    status: "ENABLED"
+                })
             // we already have some controller states
-            .whereNotNull("controller_states.registration_time")
+                .whereNotNull("controller_states.registration_time")
 
-        for (const controller of controllers) {
-            await knex.transaction(async (trx) => {
+            for (const controller of controllers) {
+            
                 if (!controller.machine_id) {
                     return
                 }
@@ -58,7 +60,7 @@ module.exports = (injects) => {
                     // redis set status
                     await redis.set("machine_error_" + controller.machine_id, `NO CONNECTION`, "px", 24 * 60 * 60 * 1000)
                     await redis.set("machine_error_time_" + controller.machine_id, `${(new Date()).getTime()}`, "px", 24 * 60 * 60 * 1000)
-                    // add machinelog
+                    // add machine log
                     await knex("machine_logs")
                         .insert({
                             message: "Пропала связь",
@@ -70,8 +72,9 @@ module.exports = (injects) => {
                         .transacting(trx)
                 }
 
-            })
-        }
+            
+            }
+        })
     }
 
 }

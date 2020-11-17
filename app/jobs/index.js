@@ -27,7 +27,7 @@ const jobs = (injects) => {
         cron.schedule("*/10 * * * *", () => {
             checkControllerConnectionJob()
                 .catch((e) => {
-                    logger.error("Failed to check payment requests for updated statuses")
+                    logger.error("Failed to check controller connection statuses")
                     logger.error(e)
                 })
         })
@@ -37,7 +37,7 @@ const jobs = (injects) => {
             checkNotificationsJob()
                 .then(log => logger.info(log))
                 .catch((e) => {
-                    logger.error("Failed to check Notification requests for updated statuses")
+                    logger.error("Failed to check fast Notification requests")
                     logger.error(e)
                 })
         })
@@ -47,7 +47,7 @@ const jobs = (injects) => {
             checkDayNotificationsJob()
                 .then(log => logger.info(log))
                 .catch((e) => {
-                    logger.error("Failed to check Notification requests for updated statuses")
+                    logger.error("Failed to check Day Notification requests")
                     logger.error(e)
                 })
         })
@@ -57,7 +57,7 @@ const jobs = (injects) => {
             checkWeekNotificationsJob()
                 .then(log => logger.info(log))
                 .catch((e) => {
-                    logger.error("Failed to check Notification requests for updated statuses")
+                    logger.error("Failed to check Week Notification requests")
                     logger.error(e)
                 })
         })
@@ -67,7 +67,7 @@ const jobs = (injects) => {
             checkMonthNotificationsJob()
                 .then(log => logger.info(log))
                 .catch((e) => {
-                    logger.error("Failed to check Notification requests for updated statuses")
+                    logger.error("Failed to check Month Notification requests")
                     logger.error(e)
                 })
         })

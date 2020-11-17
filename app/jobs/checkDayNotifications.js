@@ -12,17 +12,20 @@ module.exports = (injects) => {
     const services = new Services(injects)
     const {knex} = injects
 
-    let sum
+
 
     return async () =>{
+        let sum
+
         const period = services.getPeriod("day")
-        logger.info("day notification job started")
+        const logDate = new Date().toTimeString()
+        logger.info(`${logDate} STARTED Day notification job`)
         return knex.transaction(async (trx) => {
             const users = await knex("users")
                 .transacting(trx)
                 .select("id as user_id", "phone", "email", "company_name as companyName" )
             const news = await services.getLastNews(trx)
-
+            let listOfAll = ``
             for (let user of users){
 
                 const dayEvents = await knex("notification_settings")
@@ -34,8 +37,12 @@ module.exports = (injects) => {
                         this.where("email", true).orWhere("tlgrm", true)
                     })
                 if(!dayEvents) continue
-
+                listOfAll += `
+${user.email}:
+`
                 for( let event of dayEvents){
+                    listOfAll += `${event.type},
+`
                     switch(event.type){
                         case "GET_DAY_SALES":
                             sum = await services.getSalesSum(user, period, trx)
@@ -56,7 +63,8 @@ module.exports = (injects) => {
 
 
             }
-            logger.info("day notification job success")
+            logger.info(`${logDate} FINISHED Day notification job`)
+            logger.info(listOfAll)
         })
 
     }

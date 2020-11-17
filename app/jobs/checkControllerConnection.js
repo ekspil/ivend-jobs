@@ -4,8 +4,8 @@ module.exports = (injects) => {
     const {knex, redis} = injects
 
     return async () => {
-
-        logger.info(`Started checking controllers  lost connection`)
+        const logDate = new Date().toTimeString()
+        logger.info(`${logDate} Started checking controllers  lost connection`)
         await knex.transaction(async (trx) => {
             const controllers = await knex("controllers")
                 .transacting(trx)
@@ -75,6 +75,7 @@ module.exports = (injects) => {
             
             }
         })
+        logger.info(` ${logDate} Finished checking controllers  lost connection`)
     }
 
 }

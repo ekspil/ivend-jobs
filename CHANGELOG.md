@@ -63,3 +63,7 @@
 # 1.1.7 - Hotfix
 
 * Small fixes
+
+# 1.1.8 - Hotfix
+
+* Small fixes

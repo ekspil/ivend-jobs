@@ -9,8 +9,11 @@ module.exports = (injects) => {
     const {knex, redis} = injects
 
     return async () => {
+        const logDate = new Date().toTimeString()
+        logger.info(`${logDate} STARTED check notifications job`)
         return knex.transaction(async (trx) => {
-            logger.info("Запуск проверки нотификаций")
+
+
             const users = await knex("users")
                 .transacting(trx)
                 .select("email", "phone", "id as user_id")
@@ -324,7 +327,7 @@ ${user.msgT}`
 
 
             }
-            return "Notifications sent successfully"
+            logger.info(`${logDate} FINISHED check notifications job`)
         })
     }
 

@@ -79,3 +79,7 @@
 # 1.2.2 - Hotfix
 
 * Fix email sending
+
+# 1.2.3 - Hotfix
+
+* Fix email sending

@@ -49,7 +49,6 @@ const sendEmail = async (email, msg) => {
         },
         body
     })
-    const js = await result.json()
     logger.debug(`Result sending to ${email}: ${JSON.stringify(result)}`)
 
 

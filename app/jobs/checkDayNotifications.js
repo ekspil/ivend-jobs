@@ -44,12 +44,12 @@ ${user.email}:
                 for( let event of dayEvents){
                     listOfAll += `${event.type},
 `
-
+                    let msg
                     let mail = event.extraEmail || user.email
                     switch(event.type){
                         case "GET_DAY_SALES":
                             sum = await services.getSalesSum(user, period, trx, true)
-                            let msg = msgs.report(sum, "день", user.companyName)
+                            msg = msgs.report(sum, "день", user.companyName)
                             if(event.telegramChat && event.tlgrm) await sendTelegram(event.telegramChat, msg)
                             if(mail && event.email) await sendEmail(event.extraEmail, msg)
                             break

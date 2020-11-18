@@ -36,7 +36,7 @@ module.exports = (injects) => {
                     .andWhere(function(){
                         this.where("email", true).orWhere("tlgrm", true)
                     })
-                if(!dayEvents) continue
+                if(!dayEvents || dayEvents.length === 0) continue
                 listOfAll += `
 ${user.email}:
 `

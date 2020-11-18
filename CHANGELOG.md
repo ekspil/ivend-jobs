@@ -67,3 +67,7 @@
 # 1.1.8 - Hotfix
 
 * Small fixes
+
+# 1.2.0 - Hotfix
+
+* Optimisation

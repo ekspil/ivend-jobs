@@ -62,34 +62,22 @@ module.exports = (injects) => {
 
 
                 for (const machine of machines) {
-                    const [lastSale] = await knex("sales")
-                        .transacting(trx)
-                        .select("id", "machine_id", "created_at")
-                        .where({
-                            machine_id: machine.id
-                        })
-                        .orderBy("id", "desc")
-                        .limit(1)
+                    const redisSale = await redis.get("machine_last_sale_" + machine.id)
+                    const lastSale = {
+                        created_at: new Date(redisSale)
+                    }
 
-                    const [lastEncashment] = await knex("encashments")
-                        .transacting(trx)
-                        .select("id", "machine_id", "created_at", "timestamp")
-                        .where({
-                            machine_id: machine.id
-                        })
-                        .orderBy("id", "desc")
-                        .limit(1)
+                    const redisEncash = await redis.get("machine_encashment_" + machine.id)
+                    const lastEncashment = {
+                        created_at: new Date(redisEncash),
+                        timestamp: new Date(redisEncash),
+                    }
 
-                    const [lastLostConnection] = await knex("machine_logs")
-                        .transacting(trx)
-                        .select("message", "created_at", "type")
-                        .where({
-                            message: "Пропала связь",
-                            type: "CONNECTION",
-                            machine_id: machine.id
-                        })
-                        .orderBy("id", "desc")
-                        .limit(1)
+
+                    const redisLostCon = await redis.get("machine_error_time_" + machine.id)
+                    const lastLostConnection = {
+                        created_at: new Date(Number(redisLostCon)),
+                    }
 
 
                     machine.lastSale = lastSale ? lastSale.created_at.getTime() : 10000000
@@ -107,7 +95,7 @@ module.exports = (injects) => {
 
                 for (const event of notifications) {
 
-                    if (!event.email && !event.telegram) {
+                    if (!event.email && !event.tlgrm) {
                         continue
                     }
                     if (!user.extraEmail && event.extraEmail) {
@@ -300,7 +288,7 @@ module.exports = (injects) => {
                     }
 
                     user.msg = "<br>" + (date.toLocaleString("ru", options)) + "</br><br>" + user.msg
-                    logger.info(`Sending email to ${user.extraEmail}. Message: ${user.msg}`)
+
                     await sendEmail(user.extraEmail, user.msg)
                 }
                 if (user.msgT) {
@@ -320,7 +308,7 @@ module.exports = (injects) => {
                     user.msgT = `
 ${(date.toLocaleString("ru", options))}
 ${user.msgT}`
-                    logger.info(`Sending telegram to ${user.telegramChat}. Message: ${user.msgT}`)
+
 
                     await sendTelegram(user.telegramChat, user.msgT)
                 }

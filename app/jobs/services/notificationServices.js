@@ -4,7 +4,14 @@ class Services {
         this.redis = redis
         this.getSalesSum = this.getSalesSum.bind(this)
     }
-    async getSalesSum(user, period, trx){
+    async getSalesSum(user, period, trx, fastYesterday){
+        if(fastYesterday){
+            const [temp] = await this.knex("temps")
+              .transacting(trx)
+              .where("user_id", user.user_id)
+              .select("amount_yesterday", "user_id", "count_yesterday")
+            return Number(temp.amount_yesterday)
+        }
         const machines = await this.knex("machines")
             .transacting(trx)
             .where("user_id", user.user_id)

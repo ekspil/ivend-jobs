@@ -45,7 +45,7 @@ ${user.email}:
 `
                     switch(event.type){
                         case "GET_DAY_SALES":
-                            sum = await services.getSalesSum(user, period, trx)
+                            sum = await services.getSalesSum(user, period, trx, true)
                             if(event.telegramChat && event.tlgrm) await sendTelegram(event.telegramChat, msgs.report(sum, "день", user.companyName))
                             if(event.extraEmail && event.email) await sendEmail(event.extraEmail, msgs.report(sum, "день", user.companyName))
                             break

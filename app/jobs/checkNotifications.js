@@ -1,6 +1,15 @@
 const logger = require("my-custom-logger")
 const {sendEmail, sendTelegram, checkTime, setNotificationTime} = require("./notificationModules/utils")
-
+const daylyServices = [
+    "CONTROLLER_NO_CONNECTION",
+    "KKT_ERROR",
+    "PINPAD_ERROR",
+    "CASH_ACCEPTOR_ERROR",
+    "USER_LOW_BALANCE",
+    "CONTROLLER_ENCASHMENT",
+    "USER_WILL_BLOCK",
+    "CONTROLLER_NO_SALES",
+]
 
 module.exports = (injects) => {
 
@@ -27,9 +36,15 @@ module.exports = (injects) => {
                 const notifications = await knex("notification_settings")
                     .transacting(trx)
                     .select("id", "type", "email", "sms", "telegram", "tlgrm", "extraEmail", "telegramChat")
-                    .where({
+                    .whereIn("type", daylyServices)
+                    .andWhere({
                         user_id: user.user_id
                     })
+                    .andWhere(function(){
+                        this.where("email", true).orWhere("tlgrm", true)
+                    })
+                if(!notifications || notifications.length === 0) continue
+
                 const machines = await knex("machines")
                     .transacting(trx)
                     .select("id", "number", "name", "equipment_id", "user_id", "place")

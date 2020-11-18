@@ -68,6 +68,10 @@
 
 * Small fixes
 
-# 1.2.0 - Hotfix
+# 1.2.0 - Release
 
 * Optimisation
+
+# 1.2.1 - Hotfix
+
+* More speed

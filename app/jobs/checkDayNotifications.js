@@ -1,4 +1,5 @@
 const {sendEmail, sendTelegram} = require("./notificationModules/utils")
+
 const Services = require("./services/notificationServices")
 const msgs = require("./notificationModules/messages")
 const logger = require("my-custom-logger")
@@ -43,16 +44,19 @@ ${user.email}:
                 for( let event of dayEvents){
                     listOfAll += `${event.type},
 `
+
+                    let mail = event.extraEmail || user.email
                     switch(event.type){
                         case "GET_DAY_SALES":
                             sum = await services.getSalesSum(user, period, trx, true)
-                            if(event.telegramChat && event.tlgrm) await sendTelegram(event.telegramChat, msgs.report(sum, "день", user.companyName))
-                            if(event.extraEmail && event.email) await sendEmail(event.extraEmail, msgs.report(sum, "день", user.companyName))
+                            let msg = msgs.report(sum, "день", user.companyName)
+                            if(event.telegramChat && event.tlgrm) await sendTelegram(event.telegramChat, msg)
+                            if(mail && event.email) await sendEmail(event.extraEmail, msg)
                             break
                         case "GET_NEWS":
                             if (news.mail === "") break
                             if(event.telegramChat && event.tlgrm) await sendTelegram(event.telegramChat, news.tlgrm)
-                            if(event.extraEmail && event.email) await sendEmail(event.extraEmail, news.mail)
+                            if(mail && event.email) await sendEmail(event.extraEmail, news.mail)
                             break
                         default:
                             break

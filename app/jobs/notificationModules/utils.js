@@ -1,4 +1,4 @@
-
+const logger = require("my-custom-logger")
 const fetch = require("node-fetch")
 
 const notificationTime = {}
@@ -42,13 +42,17 @@ const sendEmail = async (email, msg) => {
     const url = `${process.env.NOTIFICATION_URL}/api/v1/template/EMAIL_MSG`
     const method = "POST"
 
-    await fetch(url, {
+    const result = await fetch(url, {
         method,
         headers: {
             "Content-Type": "application/json"
         },
         body
     })
+    const js = await result.json()
+    logger.debug(`Result sending to ${email}: ${JSON.stringify(result)}`)
+
+
 }
 
 module.exports = {

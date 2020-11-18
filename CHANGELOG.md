@@ -75,3 +75,7 @@
 # 1.2.1 - Hotfix
 
 * More speed
+
+# 1.2.2 - Hotfix
+
+* Fix email sending

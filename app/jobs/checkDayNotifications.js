@@ -51,12 +51,12 @@ ${user.email}:
                             sum = await services.getSalesSum(user, period, trx, true)
                             msg = msgs.report(sum, "день", user.companyName)
                             if(event.telegramChat && event.tlgrm) await sendTelegram(event.telegramChat, msg)
-                            if(mail && event.email) await sendEmail(event.extraEmail, msg)
+                            if(mail && event.email) await sendEmail(mail, msg)
                             break
                         case "GET_NEWS":
                             if (news.mail === "") break
                             if(event.telegramChat && event.tlgrm) await sendTelegram(event.telegramChat, news.tlgrm)
-                            if(mail && event.email) await sendEmail(event.extraEmail, news.mail)
+                            if(mail && event.email) await sendEmail(mail, news.mail)
                             break
                         default:
                             break

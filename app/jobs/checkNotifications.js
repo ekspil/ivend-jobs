@@ -133,10 +133,10 @@ module.exports = (injects) => {
                                 if (event.tlgrm && event.telegramChat) {
 
                                     user.msgT = `${user.msgT}
-Нет связи с контроллером на автомате: ${mach.name} ( ${mach.number} )`
+Автомат ${mach.name} ( ${mach.number} ) - Нет связи с автоматом`
                                 }
                                 if (event.email  && event.extraEmail) {
-                                    user.msg = user.msg + "<br>" + "Нет связи с контроллером на автомате:" + mach.name + " (" + mach.number + ")"
+                                    user.msg = user.msg + "<br>" + "Автомат " + mach.name + " (" + mach.number + ") - Нет связи с автоматом"
                                 }
                                 await setNotificationTime(event.type, "machine" + mach.id + mach.lostConnection)
                             }
@@ -154,10 +154,10 @@ module.exports = (injects) => {
                                 if (event.tlgrm && event.telegramChat) {
 
                                     user.msgT = `${user.msgT}
-Не работает ККТ на автомате: ${mach.name} ( ${mach.number} )`
+Автомат ${mach.name} (${mach.number}) - Неисправна онлайн касса`
                                 }
                                 if (event.email  && event.extraEmail) {
-                                    user.msg = user.msg + "<br>" + "Не работает ККТ на автомате:" + mach.name + " (" + mach.number + ")"
+                                    user.msg = user.msg + "<br>" + "Автомат " + mach.name + " (" + mach.number + ") - Неисправна онлайн касса"
                                 }
                                 await setNotificationTime(event.type, "KKT_ERROR" + mach.id)
                             }
@@ -175,10 +175,10 @@ module.exports = (injects) => {
                                 if (event.tlgrm && event.telegramChat) {
 
                                     user.msgT = `${user.msgT}
-Не работает Терминал на автомате: ${mach.name} ( ${mach.number} )`
+Автомат ${mach.name} (${mach.number}) - Неиспрвент POS терминал`
                                 }
                                 if (event.email  && event.extraEmail) {
-                                    user.msg = user.msg + "<br>" + "Не работает Терминал на автомате:" + mach.name + " (" + mach.number + ")"
+                                    user.msg = user.msg + "<br>" + "Автомат " + mach.name + " (" + mach.number + ") - Неиспрвент POS терминал"
                                 }
                                 await setNotificationTime(event.type, "PINPAD_ERROR" + mach.id)
                             }
@@ -196,10 +196,10 @@ module.exports = (injects) => {
                                 if (event.tlgrm && event.telegramChat) {
 
                                     user.msgT = `${user.msgT}
-Не работает Купюроприемник на автомате: ${mach.name} ( ${mach.number} )`
+Автомат ${mach.name} (${mach.number}) - Неисправен купюроприемник`
                                 }
                                 if (event.email  && event.extraEmail) {
-                                    user.msg = user.msg + "<br>" + "Не работает Купюроприемник на автомате:" + mach.name + " (" + mach.number + ")"
+                                    user.msg = user.msg + "<br>" + "Автомат " + mach.name + " (" + mach.number + ") - Неисправен купюроприемник"
                                 }
                                 await setNotificationTime(event.type, "CASH_ACCEPTOR_ERROR" + mach.id)
                             }
@@ -214,10 +214,11 @@ module.exports = (injects) => {
                             }
                             if (event.tlgrm && event.telegramChat) {
                                 user.msgT = `${user.msgT}
-Баланс близок к нулю`
+Баланс вашего кабинета менее ${process.env.USER_LOW_BALANCE} руб.
+Пополните баланс, не допускайте блокировки!`
                             }
                             if (event.email  && event.extraEmail) {
-                                user.msg = user.msg + "<br>" + "Баланс близок к нулю"
+                                user.msg = user.msg + "<br>" + "Баланс вашего кабинета менее "+process.env.USER_LOW_BALANCE+" руб. Пополните баланс, не допускайте блокировки!"
                             }
                             await setNotificationTime(event.type, "user" + user.user_id)
                             break
@@ -250,10 +251,11 @@ module.exports = (injects) => {
                             }
                             if (event.tlgrm && event.telegramChat) {
                                 user.msgT = `${user.msgT}
-Возможна блокировка по балансу`
+Баланс вашего кабинета менее ${process.env.USER_WILL_BLOCK} руб.
+Пополните баланс, частично ограничен доступ к услугам!`
                             }
                             if (event.email  && event.extraEmail) {
-                                user.msg = user.msg + "<br>" + "Возможна блокировка по балансу"
+                                user.msg = user.msg + "<br>" + "Баланс вашего кабинета менее "+process.env.USER_WILL_BLOCK+" руб. Пополните баланс, частично ограничен доступ к услугам!"
                             }
                             await setNotificationTime(event.type, "user" + user.user_id)
                             break
@@ -270,10 +272,10 @@ module.exports = (injects) => {
                                 }
                                 if (event.tlgrm && event.telegramChat) {
                                     user.msgT = `${user.msgT}
-Нет продаж за последние сутки автомате: ${mach.name} ( ${mach.number} )`
+Автомат ${mach.name} (${mach.number}) - Нет продаж на автомате 24 часа`
                                 }
                                 if (event.email  && event.extraEmail) {
-                                    user.msg = user.msg + "<br>" + "Не было продаж в течении суток на автомате:" + mach.name + " (" + mach.number + ")"
+                                    user.msg = user.msg + "<br>" + "Автомат" + mach.name + " (" + mach.number + ") - Нет продаж на автомате 24 часа"
                                 }
                                 await redis.set("machine_error_" + mach.id, `NO SALES 24H`, "px", 31 * 24 * 60 * 60 * 1000)
                                 await redis.set("machine_error_time_" + mach.id, `${(new Date()).getTime()}`, "px", 31 * 24 * 60 * 60 * 1000)

@@ -43,7 +43,7 @@ const jobs = (injects) => {
         })
 
         // Day start
-        cron.schedule("00 00 7 * * *", () => {
+        cron.schedule("00 00 6 * * *", () => {
             checkDayNotificationsJob()
                 .then(log => logger.info(log))
                 .catch((e) => {
@@ -53,7 +53,7 @@ const jobs = (injects) => {
         })
 
         // Week start
-        cron.schedule("00 00 8 * * 1", () => {
+        cron.schedule("00 30 6 * * 1", () => {
             checkWeekNotificationsJob()
                 .then(log => logger.info(log))
                 .catch((e) => {
@@ -63,7 +63,7 @@ const jobs = (injects) => {
         })
 
         // Month start
-        cron.schedule("00 30 8 1 * *", () => {
+        cron.schedule("00 00 7 1 * *", () => {
             checkMonthNotificationsJob()
                 .then(log => logger.info(log))
                 .catch((e) => {

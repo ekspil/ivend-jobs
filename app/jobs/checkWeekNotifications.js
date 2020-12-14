@@ -18,7 +18,7 @@ module.exports = (injects) => {
         return knex.transaction(async trx => {
             const users = await knex("users")
                 .transacting(trx)
-                .select("id as user_id", "phone", "email" )
+                .select("id as user_id", "phone", "email", "company_name as companyName" )
 
             for (let user of users){
                 const dayEvents = await knex("notification_settings")
@@ -35,8 +35,8 @@ module.exports = (injects) => {
                     switch(event.type){
                         case "GET_WEEK_SALES":
                             sum = await services.getSalesSum(user, period, trx)
-                            if(event.telegramChat && event.tlgrm) await sendTelegram(event.telegramChat, msgs.report(sum, "неделя"))
-                            if(event.extraEmail && event.email) await sendEmail(event.extraEmail, msgs.report(sum, "неделя"))
+                            if(event.telegramChat && event.tlgrm) await sendTelegram(event.telegramChat, msgs.report(sum, "неделя", user.companyName))
+                            if(event.extraEmail && event.email) await sendEmail(event.extraEmail, msgs.report(sum, "неделя", user.companyName))
                             break
                         default:
                             break

@@ -87,3 +87,7 @@
 # 1.2.4 - Hotfix
 
 * Fix email sending
+
+# 1.2.5 - Hotfix
+
+* Fix texts

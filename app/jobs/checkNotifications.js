@@ -175,10 +175,10 @@ module.exports = (injects) => {
                                 if (event.tlgrm && event.telegramChat) {
 
                                     user.msgT = `${user.msgT}
-Автомат ${mach.name} (${mach.number}) - Неиспрвент POS терминал`
+Автомат ${mach.name} (${mach.number}) - Неисправен POS терминал`
                                 }
                                 if (event.email  && event.extraEmail) {
-                                    user.msg = user.msg + "<br>" + "Автомат " + mach.name + " (" + mach.number + ") - Неиспрвент POS терминал"
+                                    user.msg = user.msg + "<br>" + "Автомат " + mach.name + " (" + mach.number + ") - Неисправен POS терминал"
                                 }
                                 await setNotificationTime(event.type, "PINPAD_ERROR" + mach.id)
                             }

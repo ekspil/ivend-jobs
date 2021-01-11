@@ -16,7 +16,6 @@ module.exports = (injects) => {
 
 
     return async () =>{
-        let sum
 
         const period = services.getPeriod("day")
         const logDate = new Date().toTimeString()
@@ -37,26 +36,45 @@ module.exports = (injects) => {
                     .andWhere(function(){
                         this.where("email", true).orWhere("tlgrm", true)
                     })
+
                 if(!dayEvents || dayEvents.length === 0) continue
+                const {sum, count, balance} = await services.getSalesSum(user, period, trx, true)
+                const msgStart = `
+${Services.ruTime("datetime")}
+${user.companyName} - Баланс ${balance} руб                
+                `
+
+                // Проверка блокировки раз в сутки
+                if(balance < 2000) {
+                    let msg = `
+Баланс вашего кабинета меньше -2000 руб. 
+Пополните баланс, работа онлайн кассы прекращена!
+`
+                    await sendEmail(user.mail, msgStart + msg, balance)
+
+                }
+
+
+
                 listOfAll += `
 ${user.email}:
 `
                 for( let event of dayEvents){
                     listOfAll += `${event.type},
 `
-                    let msg
+                    let msg = ""
                     let mail = event.extraEmail || user.email
                     switch(event.type){
                         case "GET_DAY_SALES":
-                            sum = await services.getSalesSum(user, period, trx, true)
-                            msg = msgs.report(sum, "день", user.companyName)
+
+                            msg = msgs.report(sum, "день", user.companyName, count)
                             if(event.telegramChat && event.tlgrm) await sendTelegram(event.telegramChat, msg)
-                            if(mail && event.email) await sendEmail(mail, msg)
+                            if(mail && event.email) await sendEmail(mail, msgStart + msg)
                             break
                         case "GET_NEWS":
                             if (news.mail === "") break
                             if(event.telegramChat && event.tlgrm) await sendTelegram(event.telegramChat, news.tlgrm)
-                            if(mail && event.email) await sendEmail(mail, news.mail)
+                            if(mail && event.email) await sendEmail(mail, msgStart + news.mail)
                             break
                         default:
                             break

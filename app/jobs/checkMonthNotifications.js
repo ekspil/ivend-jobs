@@ -11,7 +11,6 @@ module.exports = (injects) => {
     const services = new Services(injects)
     const {knex} = injects
     const period = services.getPeriod("month")
-    let sum
     return async () =>{
         logger.info("start month notification job")
         return knex.transaction(async trx => {
@@ -29,13 +28,17 @@ module.exports = (injects) => {
                         this.where("email", true).orWhere("tlgrm", true)
                     })
                 if(!dayEvents) continue
+                const {sum, count, balance} = await services.getSalesSum(user, period, trx, true)
+                const msgStart = `
+${Services.ruTime("datetime")}
+${user.companyName} - Баланс ${balance} руб                
+                `
 
                 for( let event of dayEvents){
                     switch(event.type){
                         case "GET_MONTH_SALES":
-                            sum = await services.getSalesSum(user, period, trx)
-                            if(event.telegramChat && event.tlgrm) await sendTelegram(event.telegramChat, msgs.report(sum, "месяц", user.companyName))
-                            if(event.extraEmail && event.email) await sendEmail(event.extraEmail, msgs.report(sum, "месяц", user.companyName))
+                            if(event.telegramChat && event.tlgrm) await sendTelegram(event.telegramChat, msgStart + msgs.report(sum, "месяц", user.companyName, count))
+                            if(event.extraEmail && event.email) await sendEmail(event.extraEmail, msgStart + msgs.report(sum, "месяц", user.companyName, count))
                             break
                         default:
                             break

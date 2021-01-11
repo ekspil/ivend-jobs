@@ -4,13 +4,34 @@ class Services {
         this.redis = redis
         this.getSalesSum = this.getSalesSum.bind(this)
     }
+
+
+    ruTime(format = "date") {
+        const options = {};
+        if (format.includes("date")) {
+            options.day = "2-digit";
+            options.month = "long";
+            options.year = "numeric";
+        }
+        if (format.includes("time")) {
+            options.hour = "2-digit";
+            options.minute = "2-digit";
+            options.second = "2-digit";
+        }
+        if (format.includes("order")) {
+            options.minute = "2-digit";
+            options.second = "2-digit";
+        }
+
+        return new Intl.DateTimeFormat("ru-RU", options).format(new Date());
+    }
     async getSalesSum(user, period, trx, fastYesterday){
         if(fastYesterday){
             const [temp] = await this.knex("temps")
                 .transacting(trx)
                 .where("user_id", user.user_id)
-                .select("amount_yesterday", "user_id", "count_yesterday")
-            return Number(temp.amount_yesterday)
+                .select("amount_yesterday", "user_id", "count_yesterday", "amount")
+            return {sum: Number(temp.amount_yesterday), count: Number(temp.count_yesterday), balance: Number(temp.amount)}
         }
         const machines = await this.knex("machines")
             .transacting(trx)
@@ -24,9 +45,11 @@ class Services {
             .andWhere(function(){
                 this.where("created_at", ">", new Date(period.from)).andWhere("created_at", "<", new Date(period.to))
             })
-        return allSales.reduce((acc, item)=>{
+        let sum = allSales.reduce((acc, item)=>{
             return Number(acc) + Number(item.price)
         }, 0)
+        let count = allSales.length
+        return {sum, count}
 
     }
     async getLastNews(trx){

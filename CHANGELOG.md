@@ -91,3 +91,7 @@
 # 1.2.5 - Hotfix
 
 * Fix texts
+
+# 1.2.6 - Hotfix
+
+* Fix lost connection

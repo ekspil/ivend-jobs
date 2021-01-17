@@ -6,7 +6,7 @@ module.exports = (injects) => {
     return async () => {
         const logDate = new Date().toTimeString()
         logger.info(`${logDate} Started checking controllers  lost connection`)
-        await knex.transaction(async (trx) => {
+        return knex.transaction(async (trx) => {
             const controllers = await knex("controllers")
                 .transacting(trx)
                 .select("machines.id as machine_id", "controller_states.registration_time", "controllers.connected as connected", "controllers.uid as uid", "controllers.id as controller_id")
@@ -19,9 +19,11 @@ module.exports = (injects) => {
                 .whereNotNull("controller_states.registration_time")
 
             for (const controller of controllers) {
+                //logger.info(`${controller.uid} - started`)
             
                 if (!controller.machine_id) {
-                    return
+                    //logger.info(`${controller.uid} - finished no machine`)
+                    continue
                 }
 
                 const [sale] = await knex("sales")
@@ -31,6 +33,8 @@ module.exports = (injects) => {
                     .orderBy("id", "desc")
                     .limit(1)
                     .transacting(trx)
+
+
 
                 const now = new Date()
                 const lastCommandTime = Math.max(controller.registration_time.getTime(), (sale ? sale.created_at.getTime() : null))
@@ -49,7 +53,8 @@ module.exports = (injects) => {
                         update.status = "DISABLED"
                     }
                     if(!controller.connected && check === 0){
-                        return
+                        //logger.info(`${controller.uid} - finished already checked`)
+                        continue
                     }
                     // set connected false
                     await knex("controllers")
@@ -72,10 +77,11 @@ module.exports = (injects) => {
                         .transacting(trx)
                 }
 
-            
+                //logger.info(`${controller.uid} - finished`)
             }
+
+            logger.info(` ${logDate} Finished checking controllers  lost connection`)
         })
-        logger.info(` ${logDate} Finished checking controllers  lost connection`)
     }
 
 }

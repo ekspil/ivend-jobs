@@ -3,6 +3,7 @@ const checkNotifications = require("./checkNotifications")
 const checkDayNotifications = require("./checkDayNotifications")
 const checkWeekNotifications = require("./checkWeekNotifications")
 const checkMonthNotifications = require("./checkMonthNotifications")
+const checkAdminStatistic = require("./checkAdminStatistics")
 const cron = require("node-cron")
 const logger = require("my-custom-logger")
 
@@ -12,6 +13,7 @@ const jobs = (injects) => {
     const checkDayNotificationsJob = checkDayNotifications(injects)
     const checkWeekNotificationsJob = checkWeekNotifications(injects)
     const checkMonthNotificationsJob = checkMonthNotifications(injects)
+    const checkAdminStatisticJob = checkAdminStatistic(injects)
 
     const get = (jobName) => {
         switch (jobName) {
@@ -23,7 +25,7 @@ const jobs = (injects) => {
     }
 
     const start = () => {
-        // Every minute
+        // Every 10 minute
         cron.schedule("*/10 * * * *", () => {
             checkControllerConnectionJob()
                 .catch((e) => {
@@ -31,8 +33,16 @@ const jobs = (injects) => {
                     logger.error(e)
                 })
         })
+        // Every 5 minute
+        cron.schedule("*/6 * * * *", () => {
+            checkAdminStatisticJob()
+                .catch((e) => {
+                    logger.error("Failed to check admin statistic")
+                    logger.error(e)
+                })
+        })
 
-        // Every 11 minutes
+        // Every 15 minutes
         cron.schedule("*/15 * * * *", () => {
             checkNotificationsJob()
                 .then(log => logger.info(log))

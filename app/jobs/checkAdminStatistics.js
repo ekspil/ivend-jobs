@@ -99,6 +99,9 @@ module.exports = (injects) => {
                     continue
                 }
                 let kktStatus = getStatus(kkt)
+                if(kktStatus === 5){
+                    statisticKkts.error++
+                }
                 if (kktStatus < 4){
                     statisticKkts.normal++
                 }

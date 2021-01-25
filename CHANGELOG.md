@@ -95,3 +95,7 @@
 # 1.2.6 - Hotfix
 
 * Fix lost connection
+
+# 1.2.7 - Hotfix
+
+* Fix lost connection

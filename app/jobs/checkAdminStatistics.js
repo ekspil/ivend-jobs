@@ -65,6 +65,8 @@ module.exports = (injects) => {
             const controllers = await knex("controllers")
                 .transacting(trx)
                 .select("connected", "status", "id")
+                .whereNull("deleted_at")
+
 
             const kkts = await knex("kkts")
                 .transacting(trx)
@@ -126,7 +128,8 @@ module.exports = (injects) => {
                     kkts_error: statisticKkts.error,
                     updated_at: new Date()
                 })
-                .where("id", maxId.max)
+                .andWhere("id", maxId.max)
+
 
 
 

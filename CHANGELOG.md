@@ -99,3 +99,8 @@
 # 1.2.7 - Hotfix
 
 * Fix lost connection
+
+
+# 1.2.8 - Hotfix
+
+* fix controllers

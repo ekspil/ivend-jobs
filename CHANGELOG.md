@@ -104,3 +104,7 @@
 # 1.2.8 - Hotfix
 
 * fix controllers
+
+# 1.2.9 - Hotfix
+
+* fix controllers

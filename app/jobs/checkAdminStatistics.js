@@ -128,7 +128,7 @@ module.exports = (injects) => {
                     kkts_error: statisticKkts.error,
                     updated_at: new Date()
                 })
-                .andWhere("id", maxId.max)
+                .where("id", maxId.max)
 
 
 

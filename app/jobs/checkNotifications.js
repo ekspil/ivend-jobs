@@ -9,6 +9,7 @@ const daylyServices = [
     "CONTROLLER_ENCASHMENT",
     "USER_WILL_BLOCK",
     "CONTROLLER_NO_SALES",
+    "MACHINE_ATTENTION_REQUIRED"
 ]
 
 module.exports = (injects) => {
@@ -47,7 +48,7 @@ module.exports = (injects) => {
 
                 const machines = await knex("machines")
                     .transacting(trx)
-                    .select("id", "number", "name", "equipment_id", "user_id", "place")
+                    .select("id", "number", "name", "equipment_id", "user_id", "place", "controller_id")
                     .where({
                         user_id: user.user_id
                     })
@@ -160,6 +161,41 @@ module.exports = (injects) => {
                                     user.msg = user.msg + "<br>" + "Автомат " + mach.name + " (" + mach.number + ") - Неисправна онлайн касса"
                                 }
                                 await setNotificationTime(event.type, "KKT_ERROR" + mach.id)
+                            }
+
+                            break
+                        case "MACHINE_ATTENTION_REQUIRED":
+
+                            for (const mach of user.machines) {
+
+                                const status = await redis.get("MACHINE_ATTENTION_REQUIRED_NOTIFICATION_" + mach.id)
+
+                                if(status === "ERROR"){
+
+
+                                    if (event.tlgrm && event.telegramChat) {
+                                        user.msgT = `${user.msgT}
+Автомат ${mach.name} (${mach.number}) - Не работает автомат`
+                                    }
+                                    if (event.email  && event.extraEmail) {
+                                        user.msg = user.msg + "<br>" + "Автомат " + mach.name + " (" + mach.number + ") - Не работает автомат"
+                                    }
+
+                                }
+                                else if (status === "OK"){
+
+
+                                    if (event.tlgrm && event.telegramChat) {
+                                        user.msgT = `${user.msgT}
+Автомат ${mach.name} (${mach.number}) - Автомат работает`
+                                    }
+                                    if (event.email  && event.extraEmail) {
+                                        user.msg = user.msg + "<br>" + "Автомат " + mach.name + " (" + mach.number + ") - Автомат работает"
+                                    }
+
+                                }
+                                await redis.set("MACHINE_ATTENTION_REQUIRED_NOTIFICATION_" + mach.id, null, "EX", 24 * 60 * 60)
+
                             }
 
                             break

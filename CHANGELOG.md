@@ -108,3 +108,8 @@
 # 1.2.9 - Hotfix
 
 * fix controllers
+
+
+# 1.2.10 - Hotfix
+
+* new notification check

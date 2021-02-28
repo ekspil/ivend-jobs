@@ -4,6 +4,7 @@ const checkDayNotifications = require("./checkDayNotifications")
 const checkWeekNotifications = require("./checkWeekNotifications")
 const checkMonthNotifications = require("./checkMonthNotifications")
 const checkAdminStatistic = require("./checkAdminStatistics")
+const checkDay = require("./dayJobs")
 const cron = require("node-cron")
 const logger = require("my-custom-logger")
 
@@ -14,6 +15,7 @@ const jobs = (injects) => {
     const checkWeekNotificationsJob = checkWeekNotifications(injects)
     const checkMonthNotificationsJob = checkMonthNotifications(injects)
     const checkAdminStatisticJob = checkAdminStatistic(injects)
+    const checkDayJob = checkDay(injects)
 
     const get = (jobName) => {
         switch (jobName) {
@@ -58,6 +60,15 @@ const jobs = (injects) => {
                 .then(log => logger.info(log))
                 .catch((e) => {
                     logger.error("Failed to check Day Notification requests")
+                    logger.error(e)
+                })
+        })
+        // every day
+        cron.schedule("00 50 23 * * *", () => {
+            checkDayJob()
+                .then(log => logger.info(log))
+                .catch((e) => {
+                    logger.error("Failed to check Day jobs")
                     logger.error(e)
                 })
         })

@@ -117,3 +117,7 @@
 # 1.2.12 - Hotfix
 
 * fix notification check
+
+# 1.2.13 - Hotfix
+
+* add day job

@@ -114,6 +114,6 @@
 
 * new notification check
 
-# 1.2.11 - Hotfix
+# 1.2.12 - Hotfix
 
 * fix notification check

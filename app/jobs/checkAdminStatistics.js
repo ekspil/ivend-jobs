@@ -66,6 +66,7 @@ module.exports = (injects) => {
                 .transacting(trx)
                 .select("connected", "status", "id")
                 .whereNull("deleted_at")
+                .whereNotNull("firmware_id")
 
 
             const kkts = await knex("kkts")

@@ -113,3 +113,7 @@
 # 1.2.10 - Hotfix
 
 * new notification check
+
+# 1.2.11 - Hotfix
+
+* fix notification check

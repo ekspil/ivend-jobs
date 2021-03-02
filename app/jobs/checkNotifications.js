@@ -2,14 +2,16 @@ const logger = require("my-custom-logger")
 const {sendEmail, sendTelegram, checkTime, setNotificationTime} = require("./notificationModules/utils")
 const daylyServices = [
     "CONTROLLER_NO_CONNECTION",
-    "KKT_ERROR",
-    "PINPAD_ERROR",
-    "CASH_ACCEPTOR_ERROR",
-    "USER_LOW_BALANCE",
     "CONTROLLER_ENCASHMENT",
-    "USER_WILL_BLOCK",
+    "MACHINE_ATTENTION_REQUIRED",
+
     "CONTROLLER_NO_SALES",
-    "MACHINE_ATTENTION_REQUIRED"
+    "NO_COINS_24H",
+    "NO_CASH_24H",
+    "NO_CASHLESS_24H",
+    "NO_RECEIPT_24H",
+
+    "USER_LOW_BALANCE",
 ]
 
 module.exports = (injects) => {
@@ -103,6 +105,9 @@ module.exports = (injects) => {
                     machine.kktStatus = await redis.get("kkt_status_" + machine.id)
                     machine.terminalStatus = await redis.get("terminal_status_" + machine.id)
                     machine.banknoteCollectorStatus = await redis.get("machine_banknote_collector_status_" + machine.id)
+                    machine.coinCollectorStatus = await redis.get("machine_coin_collector_status_" + machine.id)
+
+                    machine.connectionBack = await redis.get("controller_connected_back" + machine.id)
 
 
                     user.machines.push(machine)
@@ -120,17 +125,39 @@ module.exports = (injects) => {
                     if (!user.telegramChat && event.telegramChat) {
                         user.telegramChat = event.telegramChat
                     }
+                    let textBalance = ""
 
                     switch (event.type) {
                         case "CONTROLLER_NO_CONNECTION":
 
                             for (const mach of user.machines) {
+
+                                if(mach.connectionBack === "OK"){
+
+
+
+                                    if (event.tlgrm && event.telegramChat) {
+
+                                        user.msgT = `${user.msgT}
+Автомат ${mach.name} ( ${mach.number} ) - Связь восстановлена`
+                                    }
+                                    if (event.email  && event.extraEmail) {
+                                        user.msg = user.msg + "<br>" + "Автомат " + mach.name + " (" + mach.number + ") - Связь восстановлена"
+                                    }
+
+                                    await redis.set("controller_connected_back" + mach.id, null, "EX", 24 * 60 * 60)
+                                    continue
+
+                                }
+
                                 if (!checkTime(event, "machine" + mach.id + mach.lostConnection)) {
                                     continue
                                 }
                                 if (mach.lostConnection < (new Date().getTime() - 24 * 60 * 60 * 1000)) {
                                     continue
                                 }
+
+
                                 if (event.tlgrm && event.telegramChat) {
 
                                     user.msgT = `${user.msgT}
@@ -143,24 +170,36 @@ module.exports = (injects) => {
                             }
 
                             break
-                        case "KKT_ERROR":
+                        case "NO_RECEIPT_24H":
 
                             for (const mach of user.machines) {
-                                if (!checkTime(event, "KKT_ERROR" + mach.id)) {
+                                if (!checkTime(event, "NO_RECEIPT_24H" + mach.id)) {
                                     continue
                                 }
-                                if(!mach.kktStatus || mach.kktStatus !== "ERROR" || mach.kktStatus !== "24H" ){
+                                if(mach.kktStatus === "ERROR" || mach.kktStatus !== "24H" ){
                                     continue
                                 }
                                 if (event.tlgrm && event.telegramChat) {
 
                                     user.msgT = `${user.msgT}
-Автомат ${mach.name} (${mach.number}) - Неисправна онлайн касса`
+Автомат ${mach.name} (${mach.number}) - Нет чеков 24 часа`
                                 }
                                 if (event.email  && event.extraEmail) {
-                                    user.msg = user.msg + "<br>" + "Автомат " + mach.name + " (" + mach.number + ") - Неисправна онлайн касса"
+                                    user.msg = user.msg + "<br>" + "Автомат " + mach.name + " (" + mach.number + ") - Нет чеков 24 часа"
                                 }
-                                await setNotificationTime(event.type, "KKT_ERROR" + mach.id)
+
+                                // add machine log
+                                await knex("machine_logs")
+                                    .insert({
+                                        message: "Нет чеков 24 часа",
+                                        type: "NO_RECEIPT_24H",
+                                        created_at: new Date(),
+                                        updated_at: new Date(),
+                                        machine_id: mach.id
+                                    })
+                                    .transacting(trx)
+
+                                await setNotificationTime(event.type, "NO_RECEIPT_24H" + mach.id)
                             }
 
                             break
@@ -199,45 +238,105 @@ module.exports = (injects) => {
                             }
 
                             break
-                        case "PINPAD_ERROR":
+                        case "NO_CASHLESS_24H":
 
                             for (const mach of user.machines) {
-                                if (!checkTime(event, "PINPAD_ERROR" + mach.id)) {
+                                if (!checkTime(event, "NO_CASHLESS_24H" + mach.id)) {
                                     continue
                                 }
-                                if(!mach.terminalStatus || mach.terminalStatus !== "ERROR" || mach.terminalStatus !== "24H" ){
+                                if(mach.terminalStatus === "OK"){
                                     continue
                                 }
                                 if (event.tlgrm && event.telegramChat) {
 
                                     user.msgT = `${user.msgT}
-Автомат ${mach.name} (${mach.number}) - Неисправен POS терминал`
+Автомат ${mach.name} (${mach.number}) - Нет безнала 24 часа`
                                 }
                                 if (event.email  && event.extraEmail) {
-                                    user.msg = user.msg + "<br>" + "Автомат " + mach.name + " (" + mach.number + ") - Неисправен POS терминал"
+                                    user.msg = user.msg + "<br>" + "Автомат " + mach.name + " (" + mach.number + ") - Нет безнала 24 часа"
                                 }
-                                await setNotificationTime(event.type, "PINPAD_ERROR" + mach.id)
+
+
+                                // add machine log
+                                await knex("machine_logs")
+                                    .insert({
+                                        message: "Нет безнала 24 часа",
+                                        type: "NO_CASHLESS_24H",
+                                        created_at: new Date(),
+                                        updated_at: new Date(),
+                                        machine_id: mach.id
+                                    })
+                                    .transacting(trx)
+
+                                await setNotificationTime(event.type, "NO_CASHLESS_24H" + mach.id)
                             }
 
                             break
-                        case "CASH_ACCEPTOR_ERROR":
+                        case "NO_CASH_24H":
 
                             for (const mach of user.machines) {
-                                if (!checkTime(event, "CASH_ACCEPTOR_ERROR" + mach.id)) {
+                                if (!checkTime(event, "NO_CASH_24H" + mach.id)) {
                                     continue
                                 }
-                                if(!mach.banknoteCollectorStatus || mach.banknoteCollectorStatus !== "ERROR" || mach.banknoteCollectorStatus !== "24H" ){
+                                if(mach.banknoteCollectorStatus === "OK"){
                                     continue
                                 }
                                 if (event.tlgrm && event.telegramChat) {
 
                                     user.msgT = `${user.msgT}
-Автомат ${mach.name} (${mach.number}) - Неисправен купюроприемник`
+Автомат ${mach.name} (${mach.number}) - Нет купюр 24 часа.`
                                 }
                                 if (event.email  && event.extraEmail) {
-                                    user.msg = user.msg + "<br>" + "Автомат " + mach.name + " (" + mach.number + ") - Неисправен купюроприемник"
+                                    user.msg = user.msg + "<br>" + "Автомат " + mach.name + " (" + mach.number + ") - Нет купюр 24 часа"
                                 }
-                                await setNotificationTime(event.type, "CASH_ACCEPTOR_ERROR" + mach.id)
+
+
+
+                                // add machine log
+                                await knex("machine_logs")
+                                    .insert({
+                                        message: "Нет купюр 24 часа",
+                                        type: "NO_CASH_24H",
+                                        created_at: new Date(),
+                                        updated_at: new Date(),
+                                        machine_id: mach.id
+                                    })
+                                    .transacting(trx)
+
+                                await setNotificationTime(event.type, "NO_CASH_24H" + mach.id)
+                            }
+
+                            break
+                        case "NO_COINS_24H":
+
+                            for (const mach of user.machines) {
+                                if (!checkTime(event, "NO_COINS_24H" + mach.id)) {
+                                    continue
+                                }
+                                if(mach.coinCollectorStatus === "OK"){
+                                    continue
+                                }
+                                if (event.tlgrm && event.telegramChat) {
+
+                                    user.msgT = `${user.msgT}
+Автомат ${mach.name} (${mach.number}) - Нет монет 24 часа.`
+                                }
+                                if (event.email  && event.extraEmail) {
+                                    user.msg = user.msg + "<br>" + "Автомат " + mach.name + " (" + mach.number + ") - Нет монет 24 часа"
+                                }
+
+                                // add machine log
+                                await knex("machine_logs")
+                                    .insert({
+                                        message: "Нет монет 24 часа",
+                                        type: "NO_COINS_24H",
+                                        created_at: new Date(),
+                                        updated_at: new Date(),
+                                        machine_id: mach.id
+                                    })
+                                    .transacting(trx)
+
+                                await setNotificationTime(event.type, "NO_COINS_24H" + mach.id)
                             }
 
                             break
@@ -245,19 +344,36 @@ module.exports = (injects) => {
                             if (!checkTime(event, "user" + user.user_id)) {
                                 break
                             }
-                            if (user.balance > Number(process.env.USER_LOW_BALANCE) || user.balance < Number(process.env.USER_WILL_BLOCK)) {
+
+                            if (user.balance < Number(process.env.USER_LOW_BALANCE) && user.balance > Number(process.env.BALANCE_LESS_100)) {
+                                textBalance = "Пополните баланс!"
+                            }
+                            else if(user.balance < Number(process.env.BALANCE_LESS_100) && user.balance > Number(process.env.USER_WILL_BLOCK)){
+                                textBalance = "Пополните баланс, не допускайте блокировки!"
+                            }
+                            else if(user.balance < Number(process.env.USER_WILL_BLOCK) && user.balance > Number(process.env.BALANCE_LESS_M100)){
+                                textBalance = "Пополните баланс, не допускайте блокировки!"
+                            }
+                            else if(user.balance < Number(process.env.BALANCE_LESS_M100) && user.balance > Number(process.env.BALANCE_BLOCKED)){
+                                textBalance = "Пополните баланс, частично ограничен доступ к услугам!"
+                            }
+                            else if(user.balance < Number(process.env.BALANCE_BLOCKED)){
+                                textBalance = "Пополните баланс, работа онлайн кассы прекращена!"
+                            }
+                            else {
                                 break
                             }
                             if (event.tlgrm && event.telegramChat) {
                                 user.msgT = `${user.msgT}
 Баланс вашего кабинета менее ${process.env.USER_LOW_BALANCE} руб.
-Пополните баланс, не допускайте блокировки!`
+${textBalance}`
                             }
                             if (event.email  && event.extraEmail) {
-                                user.msg = user.msg + "<br>" + "Баланс вашего кабинета менее "+process.env.USER_LOW_BALANCE+" руб. Пополните баланс, не допускайте блокировки!"
+                                user.msg = user.msg + "<br>" + "Баланс вашего кабинета менее " + process.env.USER_LOW_BALANCE + " руб. " + textBalance
                             }
                             await setNotificationTime(event.type, "user" + user.user_id)
                             break
+
                         case "CONTROLLER_ENCASHMENT":
 
                             for (const mach of user.machines) {
@@ -278,23 +394,7 @@ module.exports = (injects) => {
                             }
 
                             break
-                        case "USER_WILL_BLOCK":
-                            if (user.balance > Number(process.env.USER_WILL_BLOCK)) {
-                                break
-                            }
-                            if (!checkTime(event, "user" + user.user_id)) {
-                                break
-                            }
-                            if (event.tlgrm && event.telegramChat) {
-                                user.msgT = `${user.msgT}
-Баланс вашего кабинета менее ${process.env.USER_WILL_BLOCK} руб.
-Пополните баланс, частично ограничен доступ к услугам!`
-                            }
-                            if (event.email  && event.extraEmail) {
-                                user.msg = user.msg + "<br>" + "Баланс вашего кабинета менее "+process.env.USER_WILL_BLOCK+" руб. Пополните баланс, частично ограничен доступ к услугам!"
-                            }
-                            await setNotificationTime(event.type, "user" + user.user_id)
-                            break
+
                         case "CONTROLLER_NO_SALES":
 
 
@@ -303,19 +403,19 @@ module.exports = (injects) => {
                                 if (mach.lastSale > (new Date().getTime() - 24 * 60 * 60 * 1000)) {
                                     continue
                                 }
-                                if (!checkTime(event, "machine" + mach.id)) {
+                                if (!checkTime(event, "CONTROLLER_NO_SALES" + mach.id)) {
                                     continue
                                 }
                                 if (event.tlgrm && event.telegramChat) {
                                     user.msgT = `${user.msgT}
-Автомат ${mach.name} (${mach.number}) - Нет продаж на автомате 24 часа`
+Автомат ${mach.name} (${mach.number}) - Нет продаж 24 часа`
                                 }
                                 if (event.email  && event.extraEmail) {
-                                    user.msg = user.msg + "<br>" + "Автомат" + mach.name + " (" + mach.number + ") - Нет продаж на автомате 24 часа"
+                                    user.msg = user.msg + "<br>" + "Автомат" + mach.name + " (" + mach.number + ") - Нет продаж 24 часа"
                                 }
                                 await redis.set("machine_error_" + mach.id, `NO SALES 24H`, "px", 31 * 24 * 60 * 60 * 1000)
                                 await redis.set("machine_error_time_" + mach.id, `${(new Date()).getTime()}`, "px", 31 * 24 * 60 * 60 * 1000)
-                                await setNotificationTime(event.type, "machine" + mach.id)
+                                await setNotificationTime(event.type, "CONTROLLER_NO_SALES" + mach.id)
                             }
 
 

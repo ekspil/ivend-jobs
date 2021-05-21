@@ -129,3 +129,7 @@
 # 1.2.15 - Hotfix
 
 * hf
+
+# 1.2.16 - Hotfix
+
+* Move to yandex cloud

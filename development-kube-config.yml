@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
       - name: graphql
-        image: registry.gitlab.com/pshenmic/ivend/jobs:$CIRCLE_SHA1
+        image: cr.yandex/crpfb8t478v3of681kce/jobs:$CIRCLE_SHA1
         imagePullPolicy: Always
         readinessProbe:
           exec:

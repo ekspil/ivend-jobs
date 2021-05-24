@@ -22,8 +22,8 @@ spec:
         app: jobs
     spec:
       containers:
-      - name: graphql
-        image: registry.gitlab.com/pshenmic/ivend/jobs:1.2.16
+      - name: jobs
+        image: cr.yandex/crpfb8t478v3of681kce/jobs:1.2.16
         readinessProbe:
           exec:
             command:

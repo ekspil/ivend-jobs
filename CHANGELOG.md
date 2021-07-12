@@ -137,3 +137,7 @@
 # 1.2.17 - Hotfix
 
 * fix
+
+# 1.2.18 - Hotfix
+
+* fix

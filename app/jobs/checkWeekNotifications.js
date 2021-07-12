@@ -31,7 +31,7 @@ module.exports = (injects) => {
                 if(!dayEvents) continue
                 const {sum, count, balance} = await services.getSalesSum(user, period, trx, true)
                 const msgStart = `
-${Services.ruTime("datetime")}
+${services.ruTime("datetime")}
 ${user.companyName} - Баланс ${balance} руб                
                 `
 

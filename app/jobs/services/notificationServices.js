@@ -3,6 +3,7 @@ class Services {
         this.knex = knex
         this.redis = redis
         this.getSalesSum = this.getSalesSum.bind(this)
+        this.ruTime = this.ruTime.bind(this)
     }
 
 
@@ -31,6 +32,9 @@ class Services {
                 .transacting(trx)
                 .where("user_id", user.user_id)
                 .select("amount_yesterday", "user_id", "count_yesterday", "amount")
+            if(!temp){
+                return {sum: 0, count: 0, balance: 0}
+            }
             return {sum: Number(temp.amount_yesterday), count: Number(temp.count_yesterday), balance: Number(temp.amount)}
         }
         const machines = await this.knex("machines")

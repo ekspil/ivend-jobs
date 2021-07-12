@@ -133,3 +133,7 @@
 # 1.2.16 - Hotfix
 
 * Move to yandex cloud
+
+# 1.2.17 - Hotfix
+
+* fix

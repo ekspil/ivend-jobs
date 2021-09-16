@@ -11,13 +11,13 @@ class Services {
         const options = {}
         if (format.includes("date")) {
             options.day = "2-digit"
-            options.month = "long"
+            options.month = "2-digit"
             options.year = "numeric"
         }
         if (format.includes("time")) {
             options.hour = "2-digit"
             options.minute = "2-digit"
-            options.second = "2-digit"
+            options.hourCycle = "h24"
         }
         if (format.includes("order")) {
             options.minute = "2-digit"

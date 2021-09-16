@@ -1,5 +1,7 @@
 const logger = require("my-custom-logger")
 const {sendEmail, sendTelegram, checkTime, setNotificationTime} = require("./notificationModules/utils")
+
+const msgs = require("./notificationModules/messages")
 const daylyServices = [
     "CONTROLLER_NO_CONNECTION",
     "CONTROLLER_ENCASHMENT",
@@ -75,8 +77,9 @@ module.exports = (injects) => {
                 user.notifications = notifications
                 user.balance = Number(balance.sum)
                 user.machines = []
-                user.msg = ""
-                user.msgT = ``
+                user.msg = `<h2>${msgs.textDate(new Date(), "datetime")}</h2><br>`
+                user.msgT = `${msgs.textDate(new Date(), "datetime")}
+                `
 
 
                 for (const machine of machines) {

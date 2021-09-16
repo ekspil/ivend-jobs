@@ -10,11 +10,12 @@ const daylyServices = [
 module.exports = (injects) => {
     const services = new Services(injects)
     const {knex} = injects
-    const period = services.getPeriod("week")
+
     return async () =>{
 
         logger.info("start week notification job")
         return knex.transaction(async trx => {
+            const period = services.getPeriod("week")
             const users = await knex("users")
                 .transacting(trx)
                 .select("id as user_id", "phone", "email", "company_name as companyName" )
@@ -29,7 +30,7 @@ module.exports = (injects) => {
                         this.where("email", true).orWhere("tlgrm", true)
                     })
                 if(!dayEvents) continue
-                const {sum, count, balance} = await services.getSalesSum(user, period, trx, true)
+                const {sum, count, balance} = await services.getSalesSum(user, period, trx)
                 const msgStart = `
 ${services.ruTime("datetime")}
 ${user.companyName} - Баланс ${balance} руб                
@@ -38,8 +39,8 @@ ${user.companyName} - Баланс ${balance} руб
                 for( let event of dayEvents){
                     switch(event.type){
                         case "GET_WEEK_SALES":
-                            if(event.telegramChat && event.tlgrm) await sendTelegram(event.telegramChat, msgs.report(sum, "неделя", user.companyName, count))
-                            if(event.extraEmail && event.email) await sendEmail(event.extraEmail, msgStart + msgs.report(sum, "неделя", user.companyName, count))
+                            if(event.telegramChat && event.tlgrm) await sendTelegram(event.telegramChat, msgs.report(sum, "неделю", user.companyName, count))
+                            if(event.extraEmail && event.email) await sendEmail(event.extraEmail, msgStart + msgs.report(sum, "неделю", user.companyName, count))
                             break
                         default:
                             break

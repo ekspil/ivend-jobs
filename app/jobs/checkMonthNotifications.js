@@ -10,10 +10,12 @@ const daylyServices = [
 module.exports = (injects) => {
     const services = new Services(injects)
     const {knex} = injects
-    const period = services.getPeriod("month")
     return async () =>{
+
         logger.info("start month notification job")
         return knex.transaction(async trx => {
+
+            const period = services.getPeriod("month")
             const users = await knex("users")
                 .transacting(trx)
                 .select("id as user_id", "phone", "email", "company_name as companyName" )
@@ -28,7 +30,7 @@ module.exports = (injects) => {
                         this.where("email", true).orWhere("tlgrm", true)
                     })
                 if(!dayEvents) continue
-                const {sum, count, balance} = await services.getSalesSum(user, period, trx, true)
+                const {sum, count, balance} = await services.getSalesSum(user, period, trx, )
                 const msgStart = `
 ${services.ruTime("datetime")}
 ${user.companyName} - Баланс ${balance} руб                

@@ -17,10 +17,11 @@ module.exports = (injects) => {
 
     return async () =>{
 
-        const period = services.getPeriod("day")
+
         const logDate = new Date().toTimeString()
         logger.info(`${logDate} STARTED Day notification job`)
         return knex.transaction(async (trx) => {
+            const period = services.getPeriod("day")
             const users = await knex("users")
                 .transacting(trx)
                 .select("id as user_id", "phone", "email", "company_name as companyName" )
@@ -67,7 +68,7 @@ ${user.email}:
                     switch(event.type){
                         case "GET_DAY_SALES":
 
-                            msg = msgs.report(sum, "день", user.companyName, count)
+                            msg = msgs.report(sum, "день", user.companyName, count, balance)
                             if(event.telegramChat && event.tlgrm) await sendTelegram(event.telegramChat, msg)
                             if(mail && event.email) await sendEmail(mail, msgStart + msg)
                             break

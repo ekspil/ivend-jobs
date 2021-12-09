@@ -150,3 +150,8 @@
 # 1.2.20 - Hotfix
 
 * fix
+
+
+# 1.2.21 - Hotfix
+
+* fix balance emailing

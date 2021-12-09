@@ -46,12 +46,36 @@ ${user.companyName} - Баланс ${balance} руб
                 `
 
                 // Проверка блокировки раз в сутки
-                if(balance < 2000) {
+                if(balance > -1000 && balance <= -100) {
+                    let msg = `
+Баланс вашего кабинета меньше -100 руб. 
+Пополните баланс!
+`
+                    await sendEmail(user.email, msgStart + msg, balance)
+
+                }
+                if(balance > -2000 && balance <= -1000) {
+                    let msg = `
+Баланс вашего кабинета меньше -1000 руб. 
+Пополните баланс, терминал отключен!
+`
+                    await sendEmail(user.email, msgStart + msg, balance)
+
+                }
+                if(balance > -4000 && balance <= -2000) {
                     let msg = `
 Баланс вашего кабинета меньше -2000 руб. 
 Пополните баланс, работа онлайн кассы прекращена!
 `
-                    await sendEmail(user.mail, msgStart + msg, balance)
+                    await sendEmail(user.email, msgStart + msg, balance)
+
+                }
+                if(balance < -4000) {
+                    let msg = `
+Баланс вашего кабинета меньше -4000 руб. 
+Пополните баланс, касса будет снята с регистрационного учета!
+`
+                    await sendEmail(user.email, msgStart + msg, balance)
 
                 }
 

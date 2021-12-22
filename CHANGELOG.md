@@ -155,3 +155,7 @@
 # 1.2.21 - Hotfix
 
 * fix balance emailing
+
+# 1.2.22 - Hotfix
+
+* fix tg news text

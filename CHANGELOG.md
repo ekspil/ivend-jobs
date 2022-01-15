@@ -159,3 +159,7 @@
 # 1.2.22 - Hotfix
 
 * fix tg news text
+
+# 1.2.23 - Hotfix
+
+* fix tg news text

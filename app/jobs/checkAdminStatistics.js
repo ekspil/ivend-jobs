@@ -64,9 +64,9 @@ module.exports = (injects) => {
         return knex.transaction(async (trx) => {
             const controllers = await knex("controllers")
                 .transacting(trx)
-                .select("connected", "status", "id")
+                .select("connected", "status", "id", "firmware_id")
                 .whereNull("deleted_at")
-                .whereNotNull("firmware_id")
+
 
 
             const kkts = await knex("kkts")
@@ -78,7 +78,7 @@ module.exports = (injects) => {
                 if(controller.status === "DISABLED"){
                     acc.disabled++
                 }
-                if(!controller.connected && controller.status !== "DISABLED"){
+                if(!controller.connected && controller.status !== "DISABLED" && controller.firmware_id){
                     acc.disconnected++
                 }
                 return acc

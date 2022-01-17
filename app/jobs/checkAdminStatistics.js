@@ -5,8 +5,20 @@ module.exports = (injects) => {
 
     const getStatus = (field) => {
         //Проверку оставшихся дней после того как установлю формат
-        if(!field.kktActivationDate){
-            return 4
+        if(!field.kktFNNumber && !field.kktRegNumber){
+            return 7
+        }
+        if(field.action === "DELETE"){
+            return 6
+        }
+        if(!field.kktActivationDate && (field.kktFNNumber  || field.kktRegNumber)){
+            return 3
+        }
+        if(!field.kktActivationDate && field.kktOFDRegKey && (field.kktFNNumber  || field.kktRegNumber)){
+            return 2
+        }
+        if(field.kktOFDRegKey && field.kktActivationDate && field.kktBillsCount === 0 && (field.kktFNNumber  || field.kktRegNumber)){
+            return 1
         }
         let date =new Date()
         let year = date.getFullYear()
@@ -17,38 +29,41 @@ module.exports = (injects) => {
         if(field.kktModel === "УМКА-01-ФА (ФН36)"){
 
 
-            if(year - yearF >= 3 && month - monthF <=0){
+            if((year - yearF >= 3 && month - monthF >=0) || (year - yearF >= 4)){
                 return 5
             }
             if(Number(field.kktBillsCount) > 230000){
                 return 5
             }
             if(year - yearF >= 3 && month - monthF == 1){
-                return 3
+                return 4
             }
             if(Number(field.kktBillsCount) > 220000){
-                return 3
+                return 4
             }
         }
         if(field.kktModel === "УМКА-01-ФА (ФН15)"){
-            if(year - yearF >= 1 && month - monthF >=3){
+            if((year - yearF >= 1 && month - monthF >=3) || (year - yearF >= 2)){
                 return 5
             }
             if(Number(field.kktBillsCount) > 230000){
                 return 5
             }
             if(year - yearF >= 1 && month - monthF >=2){
-                return 3
+                return 4
             }
             if(Number(field.kktBillsCount) > 220000){
-                return 3
+                return 4
             }
         }
         if(field.kktLastBill){
             let da = new Date(field.kktLastBill).getTime()
             let dn = new Date()
-            if (da < (dn - (1000 * 60 * 60 * 24 * 10))) {
-                return 3
+            if (da < (dn - (1000 * 60 * 60 * 24 * 7))) {
+                return 5
+            }
+            if (da < (dn - (1000 * 60 * 60 * 24 * 3))) {
+                return 4
             }
         }
 
@@ -71,7 +86,7 @@ module.exports = (injects) => {
 
             const kkts = await knex("kkts")
                 .transacting(trx)
-                .select("kktBillsCount", "kktActivationDate",  "kktModel",  "kktLastBill", "id")
+                .select("kktBillsCount", "kktActivationDate", "kktFNNumber", "kktRegNumber",  "kktModel",  "kktLastBill", "id", "status", "action", "kktOFDRegKey")
 
             const statisticControllers = controllers.reduce((acc, controller) => {
                 acc.count++
@@ -95,17 +110,27 @@ module.exports = (injects) => {
             }
 
             for (let kkt of kkts){
+                let kktStatus = getStatus(kkt)
+
+                await knex("kkts")
+                    .transacting(trx)
+                    .update({
+                        status: Number(kktStatus)
+                    })
+                    .where("id", kkt.id)
+
+
                 statisticKkts.count++
                 let status = await redis.get("kkt_status_" + kkt.id)
                 if(status === "ERROR"){
                     statisticKkts.error++
                     continue
                 }
-                let kktStatus = getStatus(kkt)
-                if(kktStatus >= 3){
+
+                if(kktStatus >= 4 && kktStatus < 6){
                     statisticKkts.error++
                 }
-                if (kktStatus < 3){
+                if (kktStatus < 4){
                     statisticKkts.normal++
                 }
 

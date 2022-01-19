@@ -17,7 +17,7 @@ module.exports = (injects) => {
         if(!field.kktActivationDate && field.kktOFDRegKey && (field.kktFNNumber  || field.kktRegNumber)){
             return 5
         }
-        if(field.kktOFDRegKey && field.kktActivationDate && field.kktBillsCount === 0 && (field.kktFNNumber  || field.kktRegNumber)){
+        if(field.kktOFDRegKey && field.kktActivationDate && !field.kktBillsCount && (field.kktFNNumber  || field.kktRegNumber)){
             return 6
         }
         let date =new Date()

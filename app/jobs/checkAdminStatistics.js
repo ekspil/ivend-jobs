@@ -32,13 +32,13 @@ module.exports = (injects) => {
             if((year - yearF >= 3 && month - monthF >=0) || (year - yearF >= 4)){
                 return 2
             }
-            if(Number(field.kktBillsCount) > 230000){
+            if(Number(field.kktBillsCount) > 249000){
                 return 2
             }
             if(year - yearF >= 3 && month - monthF == 1){
                 return 3
             }
-            if(Number(field.kktBillsCount) > 220000){
+            if(Number(field.kktBillsCount) > 230000){
                 return 3
             }
         }
@@ -46,13 +46,13 @@ module.exports = (injects) => {
             if((year - yearF >= 1 && month - monthF >=3) || (year - yearF >= 2)){
                 return 2
             }
-            if(Number(field.kktBillsCount) > 230000){
+            if(Number(field.kktBillsCount) > 249000){
                 return 2
             }
             if(year - yearF >= 1 && month - monthF >=2){
                 return 3
             }
-            if(Number(field.kktBillsCount) > 220000){
+            if(Number(field.kktBillsCount) > 230000){
                 return 3
             }
         }

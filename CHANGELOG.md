@@ -168,3 +168,7 @@
 # 1.2.24 - Hotfix
 
 * fix kkt statuses
+
+# 1.2.25 - Hotfix
+
+* fix kkt statuses

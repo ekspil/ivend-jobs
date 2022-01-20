@@ -180,3 +180,7 @@
 # 1.2.27 - Hotfix
 
 * fix kkt statuses
+
+# 1.2.28 - Hotfix
+
+* fix kkt statuses

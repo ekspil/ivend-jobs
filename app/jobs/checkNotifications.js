@@ -11,8 +11,6 @@ const daylyServices = [
     "NO_CASH_24H",
     "NO_CASHLESS_24H",
     "NO_RECEIPT_24H",
-
-    "USER_LOW_BALANCE",
 ]
 
 module.exports = (injects) => {
@@ -347,26 +345,37 @@ module.exports = (injects) => {
                             }
 
                             if (user.balance < Number(process.env.USER_LOW_BALANCE) && user.balance > Number(process.env.BALANCE_LESS_100)) {
-                                textBalance = "Пополните баланс!"
+                                textBalance = `
+Баланс вашего кабинета менее ${process.env.USER_LOW_BALANCE} руб.
+Пополните баланс!`
                             }
                             else if(user.balance < Number(process.env.BALANCE_LESS_100) && user.balance > Number(process.env.USER_WILL_BLOCK)){
-                                textBalance = "Пополните баланс, не допускайте блокировки!"
+                                textBalance = `
+Баланс вашего кабинета менее ${process.env.BALANCE_LESS_100} руб.
+Пополните баланс, не допускайте блокировки!`
                             }
                             else if(user.balance < Number(process.env.USER_WILL_BLOCK) && user.balance > Number(process.env.BALANCE_LESS_M100)){
-                                textBalance = "Пополните баланс, не допускайте блокировки!"
+                                textBalance = `
+Баланс вашего кабинета менее ${process.env.USER_WILL_BLOCK} руб.
+Пополните баланс, не допускайте блокировки!`
                             }
                             else if(user.balance < Number(process.env.BALANCE_LESS_M100) && user.balance > Number(process.env.BALANCE_BLOCKED)){
-                                textBalance = "Пополните баланс, частично ограничен доступ к услугам!"
+                                textBalance = `
+Баланс вашего кабинета менее ${process.env.BALANCE_LESS_M100} руб.
+Пополните баланс, частично ограничен доступ к услугам!`
                             }
                             else if(user.balance < Number(process.env.BALANCE_BLOCKED)){
-                                textBalance = "Пополните баланс, работа онлайн кассы прекращена!"
+                                textBalance = `
+Баланс вашего кабинета менее ${process.env.USER_LOW_BALANCE} руб.
+Пополните баланс, работа онлайн кассы прекращена!`
+
+
                             }
                             else {
                                 break
                             }
                             if (event.tlgrm && event.telegramChat) {
                                 user.msgT = `${user.msgT}
-Баланс вашего кабинета менее ${process.env.USER_LOW_BALANCE} руб.
 ${textBalance}`
                             }
                             if (event.email  && event.extraEmail) {

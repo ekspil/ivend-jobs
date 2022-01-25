@@ -11,6 +11,7 @@ const daylyServices = [
     "NO_CASH_24H",
     "NO_CASHLESS_24H",
     "NO_RECEIPT_24H",
+    "USER_LOW_BALANCE"
 ]
 
 module.exports = (injects) => {

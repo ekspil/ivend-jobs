@@ -7,7 +7,7 @@ module.exports = (injects) => {
 
 
 
-    const {knex, redis} = injects
+    const {knex} = injects
 
     return async () => {
         const fileAddress = path.join(__dirname, "result.txt")
@@ -46,6 +46,7 @@ module.exports = (injects) => {
                         number: item.number,
                         imsi: item.imsi,
                     })
+                logger.info("sims_updated")
             }
         })
     }

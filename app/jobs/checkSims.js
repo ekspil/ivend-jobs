@@ -46,7 +46,7 @@ module.exports = (injects) => {
                         number: item.number,
                         imsi: item.imsi,
                     })
-                logger.info("sims_updated")
+                logger.info("job_sims_updated")
             }
         })
     }

@@ -5,6 +5,7 @@ const checkWeekNotifications = require("./checkWeekNotifications")
 const checkMonthNotifications = require("./checkMonthNotifications")
 const checkAdminStatistic = require("./checkAdminStatistics")
 const checkDay = require("./dayJobs")
+const checkSims = require("./checkSims")
 const cron = require("node-cron")
 const logger = require("my-custom-logger")
 
@@ -16,6 +17,7 @@ const jobs = (injects) => {
     const checkMonthNotificationsJob = checkMonthNotifications(injects)
     const checkAdminStatisticJob = checkAdminStatistic(injects)
     const checkDayJob = checkDay(injects)
+    const checkSimsJob = checkSims(injects)
 
     const get = (jobName) => {
         switch (jobName) {
@@ -32,6 +34,14 @@ const jobs = (injects) => {
             checkControllerConnectionJob()
                 .catch((e) => {
                     logger.error("Failed to check controller connection statuses")
+                    logger.error(e)
+                })
+        })
+        // Every 10 minute
+        cron.schedule("*/50 * * * * *", () => {
+            checkSimsJob()
+                .catch((e) => {
+                    logger.error("Failed to check sims")
                     logger.error(e)
                 })
         })

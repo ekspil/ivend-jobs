@@ -94,8 +94,7 @@ module.exports = (injects) => {
         const fileAddress = path.join(__dirname, "result.txt")
 
         let file = await fs.readFileSync(fileAddress, "utf8")
-        logger.info(file)
-        file = file.split("\r\n")
+        file = file.split("\n")
         file = file.map(item => {
             const arr = item.split(";")
             return {

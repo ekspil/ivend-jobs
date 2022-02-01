@@ -40,7 +40,7 @@ const jobs = (injects) => {
                 })
         })
         // Every 1:00
-        cron.schedule("00 00 1 * * *", () => {
+        cron.schedule("00 28 1 * * *", () => {
             checkSimsJob()
                 .catch((e) => {
                     logger.error("Failed to check sims")

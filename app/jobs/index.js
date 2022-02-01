@@ -6,6 +6,7 @@ const checkMonthNotifications = require("./checkMonthNotifications")
 const checkAdminStatistic = require("./checkAdminStatistics")
 const checkDay = require("./dayJobs")
 const checkSims = require("./checkSims")
+const simsControllersCompare = require("./simsControllersCompare")
 const cron = require("node-cron")
 const logger = require("my-custom-logger")
 
@@ -18,6 +19,7 @@ const jobs = (injects) => {
     const checkAdminStatisticJob = checkAdminStatistic(injects)
     const checkDayJob = checkDay(injects)
     const checkSimsJob = checkSims(injects)
+    const simsControllersCompareJob = simsControllersCompare(injects)
 
     const get = (jobName) => {
         switch (jobName) {
@@ -37,11 +39,19 @@ const jobs = (injects) => {
                     logger.error(e)
                 })
         })
-        // Every 10 minute
-        cron.schedule("*/50 * * * * *", () => {
+        // Every 1:00
+        cron.schedule("00 00 1 * * *", () => {
             checkSimsJob()
                 .catch((e) => {
                     logger.error("Failed to check sims")
+                    logger.error(e)
+                })
+        })
+        // Every 30 minute
+        cron.schedule("*/30 * * * *", () => {
+            simsControllersCompareJob()
+                .catch((e) => {
+                    logger.error("Failed to compare sims and controllers")
                     logger.error(e)
                 })
         })

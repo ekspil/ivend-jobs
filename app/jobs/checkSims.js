@@ -3,6 +3,14 @@ const fs = require("fs")
 const path = require("path")
 const fetch = require("node-fetch")
 
+const waitASec = async (time) => {
+    return new Promise((resolve => {
+        setTimeout(() => {
+            resolve()
+        }, time || 1000)
+    }))
+}
+
 const goodLineAuth = async () => {
     const login = process.env.GOODLINE_LOGIN || "api-info@ivend.pro"
     const pass = process.env.GOODLINE_PASS || "95aYfVAWRTG4Uh4b"
@@ -121,20 +129,24 @@ module.exports = (injects) => {
                         traffic: 0,
                         expense: 0
                     })
-                logger.info("job_sims_updated")
+
             }
+            logger.info("job_sims_uploaded")
         })
+
+        logger.info("job_sim_info_update_started")
 
         const sims = await knex("sims")
             .select("imsi", "number")
         
         for (let sim of sims){
+
             let simInfo = await getSimInfo(sim.number, token)
-            logger.info(simInfo)
             if(simInfo === 0) {
                 continue
             }
             if(simInfo === false){
+                await waitASec()
                 token = await goodLineAuth()
                 simInfo = await getSimInfo(sim.number, token)
             }
@@ -148,11 +160,9 @@ module.exports = (injects) => {
                     imsi: sim.imsi
                 })
 
-
-
-
-
         }
+
+        logger.info("job_sim_info_updated")
 
 
 

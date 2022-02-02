@@ -7,6 +7,7 @@ const checkAdminStatistic = require("./checkAdminStatistics")
 const checkDay = require("./dayJobs")
 const checkSims = require("./checkSims")
 const simsControllersCompare = require("./simsControllersCompare")
+const resetSims = require("./resetSims")
 const cron = require("node-cron")
 const logger = require("my-custom-logger")
 
@@ -20,6 +21,7 @@ const jobs = (injects) => {
     const checkDayJob = checkDay(injects)
     const checkSimsJob = checkSims(injects)
     const simsControllersCompareJob = simsControllersCompare(injects)
+    const resetSimsJob = resetSims(injects)
 
     const get = (jobName) => {
         switch (jobName) {
@@ -32,6 +34,14 @@ const jobs = (injects) => {
 
     const start = () => {
         // Every 10 minute
+        cron.schedule("*/1 * * * *", () => {
+            resetSimsJob()
+                .catch((e) => {
+                    logger.error("Failed to check reset sims")
+                    logger.error(e)
+                })
+        })
+        // Every 10 minute
         cron.schedule("*/10 * * * *", () => {
             checkControllerConnectionJob()
                 .catch((e) => {
@@ -40,7 +50,7 @@ const jobs = (injects) => {
                 })
         })
         // Every 1:00
-        cron.schedule("00 47 1 * * *", () => {
+        cron.schedule("00 00 11 * * *", () => {
             checkSimsJob()
                 .catch((e) => {
                     logger.error("Failed to check sims")
@@ -75,7 +85,7 @@ const jobs = (injects) => {
         })
 
         // Day start
-        cron.schedule("00 00 6 * * *", () => {
+        cron.schedule("00 00 9 * * *", () => {
             checkDayNotificationsJob()
                 .then(log => logger.info(log))
                 .catch((e) => {
@@ -94,7 +104,7 @@ const jobs = (injects) => {
         })
 
         // Week start
-        cron.schedule("00 30 6 * * 1", () => {
+        cron.schedule("00 30 9 * * 1", () => {
             checkWeekNotificationsJob()
                 .then(log => logger.info(log))
                 .catch((e) => {
@@ -104,7 +114,7 @@ const jobs = (injects) => {
         })
 
         // Month start
-        cron.schedule("00 00 7 1 * *", () => {
+        cron.schedule("00 00 10 1 * *", () => {
             checkMonthNotificationsJob()
                 .then(log => logger.info(log))
                 .catch((e) => {

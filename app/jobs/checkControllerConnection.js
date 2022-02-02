@@ -27,6 +27,7 @@ module.exports = (injects) => {
                 }
 
                 const [sale] = await knex("sales")
+                    .select("created_at")
                     .where({
                         machine_id: controller.machine_id,
                     })

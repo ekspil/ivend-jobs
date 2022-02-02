@@ -33,7 +33,7 @@ const jobs = (injects) => {
     }
 
     const start = () => {
-        // Every 10 minute
+        // RESET SIMS Every 15 minute
         cron.schedule("*/15 * * * *", () => {
             resetSimsJob()
                 .catch((e) => {

@@ -34,7 +34,7 @@ const jobs = (injects) => {
 
     const start = () => {
         // Every 10 minute
-        cron.schedule("*/1 * * * *", () => {
+        cron.schedule("*/15 * * * *", () => {
             resetSimsJob()
                 .catch((e) => {
                     logger.error("Failed to check reset sims")

@@ -87,6 +87,26 @@ module.exports = (injects) => {
             const kkts = await knex("kkts")
                 .transacting(trx)
                 .select("kktBillsCount", "kktActivationDate", "kktFNNumber", "kktRegNumber",  "kktModel",  "kktLastBill", "id", "status", "action", "kktOFDRegKey")
+            const sims = await knex("sims")
+                .transacting(trx)
+                .select("traffic", "expense")
+
+            const statisticSims = sims.reduce((acc, sim) => {
+                acc.traffic += Number(sim.traffic)
+                acc.expense += Number(sim.expense)
+
+                if(Number(sim.traffic) > 0.001){
+                    acc.count++
+                }
+                return acc
+
+            }, {
+                count: 0,
+                traffic: 0,
+                expense: 0,
+            })
+
+
 
             const statisticControllers = controllers.reduce((acc, controller) => {
                 acc.count++
@@ -152,6 +172,9 @@ module.exports = (injects) => {
                     kkts_count: statisticKkts.count,
                     kkts_normal: statisticKkts.normal,
                     kkts_error: statisticKkts.error,
+                    sim_count: statisticSims.count,
+                    sim_expense: statisticSims.expense,
+                    sim_traffic: statisticSims.traffic,
                     updated_at: new Date()
                 })
                 .where("id", maxId.max)

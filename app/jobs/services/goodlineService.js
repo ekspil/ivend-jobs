@@ -44,9 +44,16 @@ class Services {
     }
 
     async getSimInfo(sim, token) {
-        const date = new Date().getTime()
+        const dateEnd = new Date()
+        dateEnd.setDate(0)
+        const dateStart = new Date()
+        dateStart.setDate(1)
+        dateStart.setMonth(dateStart.getMonth() - 1)
 
-        const url = `https://api.m2m.express/api/v2/simcards/${sim}/cdr?date_from=${new Date(date - 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0]}&date_to=${new Date().toISOString().split("T")[0]}`
+
+
+
+        const url = `https://api.m2m.express/api/v2/simcards/${sim}/cdr?date_from=${dateStart.toISOString().split("T")[0]}&date_to=${dateEnd.toISOString().split("T")[0]}`
         const method = "GET"
         try{
             const response = await fetch(url, {

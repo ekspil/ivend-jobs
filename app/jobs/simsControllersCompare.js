@@ -22,7 +22,7 @@ module.exports = (injects) => {
                             controller_uid: controller.uid,
                         })
                         .where({
-                            imsi: controller.imsi
+                            imsi: controller.imsi.replace(/\D/g,"")
                         })
                 }
                 if(controller.imsi_terminal){
@@ -34,7 +34,7 @@ module.exports = (injects) => {
                             terminal: controller.bank_terminal_mode
                         })
                         .where({
-                            imsi: controller.imsi_terminal
+                            imsi: controller.imsi_terminal.replace(/\D/g,"")
                         })
                 }
             }

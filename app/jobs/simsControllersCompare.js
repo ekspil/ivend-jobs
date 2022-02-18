@@ -11,7 +11,8 @@ module.exports = (injects) => {
             logger.info("job_sims_and_controller_compare_started")
             const controllers = await knex("controllers")
                 .transacting(trx)
-                .select("imsi", "imsi_terminal", "bank_terminal_mode", "id", "uid")
+                .select("imsi", "imsi_terminal", "bank_terminal_mode", "controllers.id as id", "controllers.uid as uid", "controllers.user_id as user_id", "users.company_name as company_name")
+                .leftJoin("users", "users.id", "controllers.user_id")
 
             for (let controller of controllers){
                 if(controller.imsi){
@@ -20,6 +21,8 @@ module.exports = (injects) => {
                         .update({
                             controller_id: controller.id,
                             controller_uid: controller.uid,
+                            user_id: Number(controller.user_id),
+                            user_name: controller.company_name,
                         })
                         .where({
                             imsi: controller.imsi.replace(/\D/g,"")
@@ -31,7 +34,9 @@ module.exports = (injects) => {
                         .update({
                             terminal_id: controller.id,
                             controller_uid: controller.uid,
-                            terminal: controller.bank_terminal_mode
+                            terminal: controller.bank_terminal_mode,
+                            user_id: Number(controller.user_id),
+                            user_name: controller.company_name
                         })
                         .where({
                             imsi: controller.imsi_terminal.replace(/\D/g,"")

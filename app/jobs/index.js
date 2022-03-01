@@ -58,7 +58,7 @@ const jobs = (injects) => {
                 })
         })
         // Every 30 minute
-        cron.schedule("*/10 * * * *", () => {
+        cron.schedule("*/30 * * * *", () => {
             simsControllersCompareJob()
                 .catch((e) => {
                     logger.error("Failed to compare sims and controllers")

@@ -15,6 +15,8 @@ module.exports = (injects) => {
                 .leftJoin("users", "users.id", "controllers.user_id")
 
             for (let controller of controllers){
+
+                logger.info(`controller_id: ${controller.id}, controller_uid: ${controller.uid}, user_id: ${Number(controller.user_id)}, user_name: ${controller.company_name},`)
                 if(controller.imsi){
                     await knex("sims")
                         .transacting(trx)

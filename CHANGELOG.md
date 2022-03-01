@@ -204,3 +204,7 @@
 # 1.2.33 - Hotfix
 
 * fix kkt statuses
+
+# 1.2.34 - Hotfix
+
+* fix kkt statuses

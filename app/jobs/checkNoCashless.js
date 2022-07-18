@@ -16,7 +16,7 @@ module.exports = (injects) => {
 
             for (let controller of controllers){
 
-                const lastCashless = await redis.get("machine_cashless_" + controller.id)
+                const lastCashless = await redis.get("terminal_cashless_" + controller.id)
 
                 const update = {}
                 if(!lastCashless){

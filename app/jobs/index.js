@@ -8,6 +8,7 @@ const checkDay = require("./dayJobs")
 const checkSims = require("./checkSims")
 const simsControllersCompare = require("./simsControllersCompare")
 const resetSims = require("./resetSims")
+const checkNoCashless = require("./checkNoCashless")
 const cron = require("node-cron")
 const logger = require("my-custom-logger")
 
@@ -22,6 +23,7 @@ const jobs = (injects) => {
     const checkSimsJob = checkSims(injects)
     const simsControllersCompareJob = simsControllersCompare(injects)
     const resetSimsJob = resetSims(injects)
+    const checkNoCashlessJob = checkNoCashless(injects)
 
     const get = (jobName) => {
         switch (jobName) {
@@ -33,6 +35,14 @@ const jobs = (injects) => {
     }
 
     const start = () => {
+        // CHECK NO CASHLESS EVERY DAY
+        cron.schedule("00 00 19 * * *", () => {
+            checkNoCashlessJob()
+                .catch((e) => {
+                    logger.error("FAILED_TO_CHECK_NO_CASHLESS")
+                    logger.error(e)
+                })
+        })
         // RESET SIMS Every 15 minute
         cron.schedule("*/15 * * * *", () => {
             resetSimsJob()

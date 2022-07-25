@@ -59,6 +59,7 @@ module.exports = (injects) => {
                             fiscalization_mode: "NO_FISCAL",
                             connected: true,
                             user_id: user.id,
+                            revision_id: 1,
                             created_at: new Date(),
                             updated_at: new Date(),
                         }, ["uid", "id"])

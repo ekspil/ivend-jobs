@@ -9,6 +9,7 @@ const checkSims = require("./checkSims")
 const simsControllersCompare = require("./simsControllersCompare")
 const resetSims = require("./resetSims")
 const checkNoCashless = require("./checkNoCashless")
+const checkIntegrations = require("./checkIntegrations")
 const cron = require("node-cron")
 const logger = require("my-custom-logger")
 
@@ -24,6 +25,7 @@ const jobs = (injects) => {
     const simsControllersCompareJob = simsControllersCompare(injects)
     const resetSimsJob = resetSims(injects)
     const checkNoCashlessJob = checkNoCashless(injects)
+    const checkIntegrationsJob = checkIntegrations(injects)
 
     const get = (jobName) => {
         switch (jobName) {
@@ -56,6 +58,14 @@ const jobs = (injects) => {
             checkControllerConnectionJob()
                 .catch((e) => {
                     logger.error("Failed to check controller connection statuses")
+                    logger.error(e)
+                })
+        })
+        // Every 10 minute
+        cron.schedule("*/15 * * * *", () => {
+            checkIntegrationsJob()
+                .catch((e) => {
+                    logger.error("FAILED_TO_CHECK_INTEGRATIONS")
                     logger.error(e)
                 })
         })

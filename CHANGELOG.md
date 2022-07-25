@@ -212,3 +212,7 @@
 # 1.2.35 - Hotfix
 
 * fix kkt statuses
+
+# 1.2.36 - Hotfix
+
+* added sim no cashless check

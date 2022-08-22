@@ -22,9 +22,9 @@ module.exports = (injects) => {
         file = file.map(item => {
             const arr = item.split(";")
             return {
-                number: arr[0],
-                meta: arr[1],
-                imsi: arr[2]
+                number: arr[0].trim(),
+                meta: arr[1].trim(),
+                imsi: arr[2].trim()
             }
         })
 

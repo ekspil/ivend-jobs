@@ -216,3 +216,7 @@
 # 1.2.36 - Hotfix
 
 * added sim no cashless check
+
+# 1.2.36 - Hotfix
+
+* add trim to imsi

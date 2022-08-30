@@ -51,9 +51,11 @@ module.exports = (injects) => {
                 const machines = await knex("machines")
                     .transacting(trx)
                     .select("id", "number", "name", "equipment_id", "user_id", "place", "controller_id")
-                    .where({
+                    .whereNull("deleted_at")
+                    .andWhere({
                         user_id: user.user_id
                     })
+
                 let [balance] = await knex("temps")
                     .transacting(trx)
                     .select("amount as sum")

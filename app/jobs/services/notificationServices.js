@@ -39,7 +39,8 @@ class Services {
         }
         const machines = await this.knex("machines")
             .transacting(trx)
-            .where("user_id", user.user_id)
+            .whereNull("deleted_at")
+            .andWhere("user_id", user.user_id)
             .select("id")
         const machineNumbers = machines.map(machine => machine.id)
         const allSales = await this.knex("sales")

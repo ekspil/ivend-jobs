@@ -220,3 +220,7 @@
 # 1.2.36 - Hotfix
 
 * add trim to imsi
+
+# 1.2.37 - Hotfix
+
+* add trim to imsi

@@ -49,21 +49,53 @@ module.exports = (injects) => {
 
                 try{
 
-                    const [newController] = await knex("controllers")
+                    let newController
+
+                    const [contr] = await knex("controllers")
                         .transacting(trx)
-                        .insert({
-                            uid: "500" + String(terminal.id),
-                            mode: "ps_m_D",
-                            status: "ENABLED",
-                            bank_terminal_mode: "vda1",
-                            fiscalization_mode: "NO_FISCAL",
-                            connected: true,
-                            user_id: user.id,
-                            revision_id: 1,
-                            read_stat_mode: "COINBOX",
-                            created_at: new Date(),
-                            updated_at: new Date(),
-                        }, ["uid", "id"])
+                        .select("id", "uid")
+                        .whereNull("user_id")
+                        .andWhere("uid", "500" + String(terminal.id))
+                        .limit(1)
+                        
+                    if (contr){
+                        [newController] = await knex("controllers")
+                            .transacting(trx)
+                            .where("uid", "500" + String(terminal.id))
+                            .update({
+                                uid: "500" + String(terminal.id),
+                                mode: "ps_m_D",
+                                status: "ENABLED",
+                                bank_terminal_mode: "vda1",
+                                fiscalization_mode: "NO_FISCAL",
+                                connected: true,
+                                user_id: user.id,
+                                revision_id: 1,
+                                read_stat_mode: "COINBOX",
+                                created_at: new Date(),
+                                updated_at: new Date(),
+                            }, ["uid", "id"])
+                    }   
+                    else {
+                        [newController] = await knex("controllers")
+                            .transacting(trx)
+                            .insert({
+                                uid: "500" + String(terminal.id),
+                                mode: "ps_m_D",
+                                status: "ENABLED",
+                                bank_terminal_mode: "vda1",
+                                fiscalization_mode: "NO_FISCAL",
+                                connected: true,
+                                user_id: user.id,
+                                revision_id: 1,
+                                read_stat_mode: "COINBOX",
+                                created_at: new Date(),
+                                updated_at: new Date(),
+                            }, ["uid", "id"])
+                    }
+
+
+
 
 
                     await knex("controller_integrations")

@@ -19,7 +19,7 @@ module.exports = (injects) => {
             const integrations = await knex("controller_integrations")
                 .transacting(trx)
                 .select("id", "type", "imei", "controller_id", "controller_uid")
-                .whereNull("controller_uid")
+                .whereNull("controller_id")
 
             for (let integration of integrations){
 
@@ -63,16 +63,8 @@ module.exports = (injects) => {
                             .transacting(trx)
                             .where("uid", "500" + String(terminal.id))
                             .update({
-                                uid: "500" + String(terminal.id),
-                                mode: "ps_m_D",
                                 status: "ENABLED",
-                                bank_terminal_mode: "vda1",
-                                fiscalization_mode: "NO_FISCAL",
                                 connected: true,
-                                user_id: user.id,
-                                revision_id: 1,
-                                read_stat_mode: "COINBOX",
-                                created_at: new Date(),
                                 updated_at: new Date(),
                             }, ["uid", "id"])
                     }   

@@ -62,7 +62,7 @@ const jobs = (injects) => {
                 })
         })
         // Every 10 minute
-        cron.schedule("*/15 * * * *", () => {
+        cron.schedule("*/10 * * * *", () => {
             checkIntegrationsJob()
                 .catch((e) => {
                     logger.error("FAILED_TO_CHECK_INTEGRATIONS")

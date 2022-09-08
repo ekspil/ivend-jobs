@@ -17,17 +17,27 @@ module.exports = (injects) => {
             for (let controller of controllers){
 
                 if(controller.imsi){
-                    await knex("sims")
+                    const [updatedSim] = await knex("sims")
                         .transacting(trx)
                         .update({
                             controller_id: controller.id,
                             controller_uid: controller.uid,
                             user_id: Number(controller.user_id),
                             user_name: controller.company_name,
-                        })
+                        }, ["number", "id"] )
                         .where({
                             imsi: controller.imsi.replace(/\D/g,"")
                         })
+
+                    await knex("controllers")
+                        .transacting(trx)
+                        .update({
+                            sim: updatedSim.number,
+                        })
+                        .where({
+                            id: controller.id
+                        })
+
                 }
                 if(controller.imsi_terminal){
                     await knex("sims")

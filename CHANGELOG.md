@@ -229,3 +229,7 @@
 # 1.2.39 - Hotfix
 
 * add trim to imsi
+
+# 1.2.40 - Hotfix
+
+* add controller sim compare

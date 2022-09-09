@@ -233,3 +233,7 @@
 # 1.2.40 - Hotfix
 
 * add controller sim compare
+
+# 1.2.43 - Hotfix
+
+* no tids needed to integrate vendista

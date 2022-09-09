@@ -33,10 +33,15 @@ module.exports = (injects) => {
 
                 if(!terminal.bank_id){
                     const tids = await vendistaService.getTids(owner.name)
-                    if(!tids.length) continue
-                    const freeTid = tids.find(item => !item.terminal_ids.length)
-                    if(!freeTid) continue
-                    await vendistaService.putTerminal(terminal.id, freeTid.tid)
+                    if(tids.length) {
+                        const freeTid = tids.find(item => !item.terminal_ids.length)
+
+                        if(freeTid) {
+
+                            await vendistaService.putTerminal(terminal.id, freeTid.tid)
+                        }
+                    }
+
 
                 }
 

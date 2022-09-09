@@ -28,15 +28,18 @@ module.exports = (injects) => {
                             user_id: Number(controller.user_id),
                             user_name: controller.company_name,
                         }, ["number", "id"] )
+                    if(updatedSim){
 
-                    await knex("controllers")
-                        .transacting(trx)
-                        .where({
-                            id: controller.id
-                        })
-                        .update({
-                            sim: updatedSim.number,
-                        })
+                        await knex("controllers")
+                            .transacting(trx)
+                            .where({
+                                id: controller.id
+                            })
+                            .update({
+                                sim: updatedSim.number,
+                            })
+
+                    }
 
                 }
                 if(controller.imsi_terminal){

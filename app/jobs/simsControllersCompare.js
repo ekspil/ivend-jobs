@@ -19,38 +19,38 @@ module.exports = (injects) => {
                 if(controller.imsi){
                     const [updatedSim] = await knex("sims")
                         .transacting(trx)
+                        .where({
+                            imsi: controller.imsi.replace(/\D/g,"")
+                        })
                         .update({
                             controller_id: controller.id,
                             controller_uid: controller.uid,
                             user_id: Number(controller.user_id),
                             user_name: controller.company_name,
                         }, ["number", "id"] )
-                        .where({
-                            imsi: controller.imsi.replace(/\D/g,"")
-                        })
 
                     await knex("controllers")
                         .transacting(trx)
-                        .update({
-                            sim: updatedSim.number,
-                        })
                         .where({
                             id: controller.id
+                        })
+                        .update({
+                            sim: updatedSim.number,
                         })
 
                 }
                 if(controller.imsi_terminal){
                     await knex("sims")
                         .transacting(trx)
+                        .where({
+                            imsi: controller.imsi_terminal.replace(/\D/g,"")
+                        })
                         .update({
                             terminal_id: controller.id,
                             controller_uid: controller.uid,
                             terminal: controller.bank_terminal_mode,
                             user_id: Number(controller.user_id),
                             user_name: controller.company_name
-                        })
-                        .where({
-                            imsi: controller.imsi_terminal.replace(/\D/g,"")
                         })
                 }
             }

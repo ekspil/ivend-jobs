@@ -60,6 +60,7 @@ module.exports = (injects) => {
                     }
 
                     let simInfo = await resetSim(sim.number, token)
+                    await waitASec()
                     if(simInfo === false){
                         await waitASec()
                         token = await goodLineAuth()

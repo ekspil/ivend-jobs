@@ -237,3 +237,7 @@
 # 1.2.43 - Hotfix
 
 * no tids needed to integrate vendista
+
+# 1.2.44 - Hotfix
+
+* hotfix

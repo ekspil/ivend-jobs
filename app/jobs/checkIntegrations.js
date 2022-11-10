@@ -59,7 +59,7 @@ module.exports = (injects) => {
                     const [contr] = await knex("controllers")
                         .transacting(trx)
                         .select("id", "uid")
-                        .whereNull("user_id")
+                        .whereNull("deleted_at")
                         .andWhere("uid", "500" + String(terminal.id))
                         .limit(1)
                         
@@ -100,7 +100,7 @@ module.exports = (injects) => {
                         .update({
                             controller_id: newController.id,
                             controller_uid: newController.uid,
-                            user_id: user.id,
+                            user_id: newController.user_id,
                             serial: terminal.serial_number
                         })
                         .where("id", integration.id)

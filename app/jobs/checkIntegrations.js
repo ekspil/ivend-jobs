@@ -71,7 +71,7 @@ module.exports = (injects) => {
                                 status: "ENABLED",
                                 connected: true,
                                 updated_at: new Date(),
-                            }, ["uid", "id"])
+                            }, ["uid", "id", "user_id"])
                     }   
                     else {
                         [newController] = await knex("controllers")
@@ -88,7 +88,7 @@ module.exports = (injects) => {
                                 read_stat_mode: "COINBOX",
                                 created_at: new Date(),
                                 updated_at: new Date(),
-                            }, ["uid", "id"])
+                            }, ["uid", "id", "user_id"])
                     }
 
 

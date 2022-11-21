@@ -241,3 +241,8 @@
 # 1.2.44 - Hotfix
 
 * hotfix
+
+
+# 1.2.45 - Hotfix
+
+* hotfix user id in controller_integrations

@@ -246,3 +246,7 @@
 # 1.2.45 - Hotfix
 
 * hotfix user id in controller_integrations
+
+# 1.2.46 - Hotfix
+
+* fix user roles in query

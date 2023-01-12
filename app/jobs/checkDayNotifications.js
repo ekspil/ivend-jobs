@@ -25,6 +25,8 @@ module.exports = (injects) => {
             const users = await knex("users")
                 .transacting(trx)
                 .select("id as user_id", "phone", "email", "company_name as companyName" )
+                .whereIn("role", ["VENDOR", "PARTNER", "VENDOR_NEGATIVE_BALANCE", "ADMIN"])
+
             const news = await services.getLastNews(trx)
             let listOfAll = ``
             for (let user of users){

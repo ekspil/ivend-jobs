@@ -250,3 +250,7 @@
 # 1.2.46 - Hotfix
 
 * fix user roles in query
+
+# 1.2.47 - Hotfix
+
+* fix user roles in query

@@ -76,6 +76,8 @@ class Services {
         return news.reduce((acc, n) => {
             let tgText = n.text.replace( /(<([^>]+)>)/ig, `
 ` )
+            tgText = tgText.replace( /&nbsp;/g, " " )
+
             acc.tlgrm =  acc.tlgrm + `
 ${n.header}
 ${tgText}

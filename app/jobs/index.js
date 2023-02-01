@@ -10,6 +10,7 @@ const simsControllersCompare = require("./simsControllersCompare")
 const resetSims = require("./resetSims")
 const checkNoCashless = require("./checkNoCashless")
 const checkIntegrations = require("./checkIntegrations")
+const newUsers = require("./checkNewUsers")
 const cron = require("node-cron")
 const logger = require("my-custom-logger")
 
@@ -26,6 +27,7 @@ const jobs = (injects) => {
     const resetSimsJob = resetSims(injects)
     const checkNoCashlessJob = checkNoCashless(injects)
     const checkIntegrationsJob = checkIntegrations(injects)
+    const newUsersJob = newUsers(injects)
 
     const get = (jobName) => {
         switch (jobName) {
@@ -42,6 +44,14 @@ const jobs = (injects) => {
             checkNoCashlessJob()
                 .catch((e) => {
                     logger.error("FAILED_TO_CHECK_NO_CASHLESS")
+                    logger.error(e)
+                })
+        })
+        // new Users Every 1 minute
+        cron.schedule("55 10 * * *", () => {
+            newUsersJob()
+                .catch((e) => {
+                    logger.error("user_add_job_error: ERROR")
                     logger.error(e)
                 })
         })

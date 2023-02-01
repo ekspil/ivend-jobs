@@ -48,7 +48,7 @@ const jobs = (injects) => {
                 })
         })
         // new Users Every 1 minute
-        cron.schedule("55 10 * * *", () => {
+        cron.schedule("55 7 * * *", () => {
             newUsersJob()
                 .catch((e) => {
                     logger.error("user_add_job_error: ERROR")

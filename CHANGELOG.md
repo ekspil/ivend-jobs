@@ -258,3 +258,7 @@
 # 1.2.48 - Hotfix
 
 * add users
+
+# 1.2.49 - Hotfix
+
+* add users

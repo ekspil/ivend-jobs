@@ -22,31 +22,37 @@ module.exports = (injects) => {
                 .whereIn("role", ["VENDOR", "PARTNER", "VENDOR_NEGATIVE_BALANCE", "ADMIN"])
 
             for (let user of users){
-                const dayEvents = await knex("notification_settings")
-                    .transacting(trx)
-                    .select("type", "email", "tlgrm", "extraEmail", "telegramChat")
-                    .whereIn("type", daylyServices)
-                    .andWhere("user_id", user.user_id)
-                    .andWhere(function(){
-                        this.where("email", true).orWhere("tlgrm", true)
-                    })
-                if(!dayEvents) continue
-                const {sum, count, balance} = await services.getSalesSum(user, period, trx)
-                const msgStart = `
+                try {
+
+                    const dayEvents = await knex("notification_settings")
+                        .transacting(trx)
+                        .select("type", "email", "tlgrm", "extraEmail", "telegramChat")
+                        .whereIn("type", daylyServices)
+                        .andWhere("user_id", user.user_id)
+                        .andWhere(function(){
+                            this.where("email", true).orWhere("tlgrm", true)
+                        })
+                    if(!dayEvents || dayEvents.length === 0) continue
+                    const {sum, count, balance} = await services.getSalesSum(user, period, trx)
+                    const msgStart = `
 ${services.ruTime("datetime")}
 ${user.companyName} - Баланс ${balance} руб                
                 `
 
-                for( let event of dayEvents){
-                    switch(event.type){
-                        case "GET_WEEK_SALES":
-                            if(event.telegramChat && event.tlgrm) await sendTelegram(event.telegramChat, msgs.report(sum, "неделю", user.companyName, count))
-                            if(event.extraEmail && event.email) await sendEmail(event.extraEmail, msgStart + msgs.report(sum, "неделю", user.companyName, count))
-                            break
-                        default:
-                            break
-                    }
+                    for( let event of dayEvents){
+                        switch(event.type){
+                            case "GET_WEEK_SALES":
+                                if(event.telegramChat && event.tlgrm) await sendTelegram(event.telegramChat, msgs.report(sum, "неделю", user.companyName, count))
+                                if(event.extraEmail && event.email) await sendEmail(event.extraEmail, msgStart + msgs.report(sum, "неделю", user.companyName, count))
+                                break
+                            default:
+                                break
+                        }
 
+                    }
+                }
+                catch (e) {
+                    logger.error("week_notification_error_info_"+e.message)
                 }
 
 

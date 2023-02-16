@@ -26,7 +26,6 @@ module.exports = (injects) => {
                 .transacting(trx)
                 .select("id as user_id", "phone", "email", "company_name as companyName" )
                 .whereIn("role", ["VENDOR", "PARTNER", "VENDOR_NEGATIVE_BALANCE", "ADMIN"])
-                .whereNull("deleted_at")
 
             const news = await services.getLastNews(trx)
             let listOfAll = ``

@@ -274,3 +274,7 @@
 # 1.2.52 - Hotfix
 
 * add users
+
+# 1.2.53 - Hotfix
+
+* hottest

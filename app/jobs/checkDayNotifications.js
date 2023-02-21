@@ -26,7 +26,8 @@ module.exports = (injects) => {
                 .transacting(trx)
                 .select("id as user_id", "phone", "email", "company_name as companyName" )
                 .whereIn("role", ["VENDOR", "PARTNER", "VENDOR_NEGATIVE_BALANCE", "ADMIN"])
-
+            logger.debug("jobs_day_debug 1 users:" + JSON.stringify(users))
+            logger.debug("jobs_day_debug 1.1 meta test ", users)
             const news = await services.getLastNews(trx)
             let listOfAll = ``
             for (let user of users){
@@ -40,9 +41,12 @@ module.exports = (injects) => {
                         .andWhere(function(){
                             this.where("email", true).orWhere("tlgrm", true)
                         })
-
+                    logger.debug("jobs_day_debug 2" + JSON.stringify(dayEvents))
                     if(!dayEvents || dayEvents.length === 0) continue
+
                     const {sum, count, balance} = await services.getSalesSum(user, period, trx, true)
+                    logger.debug(`jobs_day_debug 2 sales ${sum}  ${count}  ${balance} `)
+
                     const msgStart = `
 ${services.ruTime("datetime")}
 ${user.companyName} - Баланс ${balance} руб                
@@ -88,14 +92,16 @@ ${user.companyName} - Баланс ${balance} руб
 ${user.email}:
 `
                     for( let event of dayEvents){
+
+                        logger.debug("jobs_day_debug 4 " + JSON.stringify(event))
                         listOfAll += `${event.type},
 `
                         let msg = ""
                         let mail = event.extraEmail || user.email
                         switch(event.type){
                             case "GET_DAY_SALES":
-
                                 msg = msgs.report(sum, "день", user.companyName, count, balance)
+
                                 if(event.telegramChat && event.tlgrm) await sendTelegram(event.telegramChat, msg)
                                 if(mail && event.email) await sendEmail(mail, msgStart + msg)
                                 break

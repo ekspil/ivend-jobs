@@ -105,7 +105,7 @@ const jobs = (injects) => {
         })
 
         // Day start
-        cron.schedule("00 32 5 * * *", () => {
+        cron.schedule("00 47 6 * * *", () => {
             checkDayNotificationsJob()
                 .then(log => logger.info(log))
                 .catch((e) => {

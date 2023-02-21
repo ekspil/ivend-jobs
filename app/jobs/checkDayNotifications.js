@@ -118,7 +118,7 @@ ${user.email}:
 
             }
             logger.info(`${logDate} FINISHED Day notification job`)
-            logger.info(listOfAll)
+            logger.info("LIST_OFF_ALL " +  listOfAll)
         })
 
     }

@@ -26,8 +26,6 @@ module.exports = (injects) => {
                 .transacting(trx)
                 .select("id as user_id", "phone", "email", "company_name as companyName" )
                 .whereIn("role", ["VENDOR", "PARTNER", "VENDOR_NEGATIVE_BALANCE", "ADMIN"])
-            logger.debug("jobs_day_debug 1 users:" + JSON.stringify(users))
-            logger.debug("jobs_day_debug 1.1 meta test ", users)
             const news = await services.getLastNews(trx)
             let listOfAll = ``
             for (let user of users){
@@ -41,15 +39,14 @@ module.exports = (injects) => {
                         .andWhere(function(){
                             this.where("email", true).orWhere("tlgrm", true)
                         })
-                    logger.debug("jobs_day_debug 2" + JSON.stringify(dayEvents))
+
                     if(!dayEvents || dayEvents.length === 0) continue
 
                     const {sum, count, balance} = await services.getSalesSum(user, period, trx, true)
-                    logger.debug(`jobs_day_debug 2 sales ${sum}  ${count}  ${balance} `)
 
                     const msgStart = `
-${services.ruTime("datetime")}
-${user.companyName} - Баланс ${balance} руб                
+${services.ruTime("datetime")} <br>
+${user.companyName} - Баланс ${balance} руб <br>               
                 `
 
                     // Проверка блокировки раз в сутки
@@ -58,7 +55,7 @@ ${user.companyName} - Баланс ${balance} руб
 Баланс вашего кабинета меньше -100 руб. 
 Пополните баланс!
 `
-                        await sendEmail(user.email, msgStart + msg, balance)
+                        await sendEmail(user.email, msgStart + "<br><br>" + msg, balance)
 
                     }
                     if(balance > -2000 && balance <= -1000) {
@@ -66,7 +63,7 @@ ${user.companyName} - Баланс ${balance} руб
 Баланс вашего кабинета меньше -1000 руб. 
 Пополните баланс, терминал отключен!
 `
-                        await sendEmail(user.email, msgStart + msg, balance)
+                        await sendEmail(user.email, msgStart + "<br><br>" + msg, balance)
 
                     }
                     if(balance > -4000 && balance <= -2000) {
@@ -74,7 +71,7 @@ ${user.companyName} - Баланс ${balance} руб
 Баланс вашего кабинета меньше -2000 руб. 
 Пополните баланс, работа онлайн кассы прекращена!
 `
-                        await sendEmail(user.email, msgStart + msg, balance)
+                        await sendEmail(user.email, msgStart + "<br><br>" + msg, balance)
 
                     }
                     if(balance < -4000) {
@@ -82,7 +79,7 @@ ${user.companyName} - Баланс ${balance} руб
 Баланс вашего кабинета меньше -4000 руб. 
 Пополните баланс, касса будет снята с регистрационного учета!
 `
-                        await sendEmail(user.email, msgStart + msg, balance)
+                        await sendEmail(user.email, msgStart + "<br><br>" + msg, balance)
 
                     }
 
@@ -93,7 +90,6 @@ ${user.email}:
 `
                     for( let event of dayEvents){
 
-                        logger.debug("jobs_day_debug 4 " + JSON.stringify(event))
                         listOfAll += `${event.type},
 `
                         let msg = ""
@@ -103,12 +99,12 @@ ${user.email}:
                                 msg = msgs.report(sum, "день", user.companyName, count, balance)
 
                                 if(event.telegramChat && event.tlgrm) await sendTelegram(event.telegramChat, msg)
-                                if(mail && event.email) await sendEmail(mail, msgStart + msg)
+                                if(mail && event.email) await sendEmail(mail, msgStart + "<br><br>" + msg)
                                 break
                             case "GET_NEWS":
                                 if (news.mail === "") break
                                 if(event.telegramChat && event.tlgrm) await sendTelegram(event.telegramChat, news.tlgrm)
-                                if(mail && event.email) await sendEmail(mail, msgStart + news.mail)
+                                if(mail && event.email) await sendEmail(mail, msgStart + "<br><br>" + news.mail)
                                 break
                             default:
                                 break
@@ -124,7 +120,7 @@ ${user.email}:
 
             }
             logger.info(`${logDate} FINISHED Day notification job`)
-            logger.info("LIST_OFF_ALL " +  listOfAll)
+            logger.info("JOBS_LIST_OF_ALL_DAY_NOTIFICATION " +  listOfAll)
         })
 
     }

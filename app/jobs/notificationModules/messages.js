@@ -24,27 +24,27 @@ function textDate(value, format = "date") {
 module.exports = {
     textDate,
     report: function(sum, period, companyName, count, balance){
-        return `${textDate(new Date(), "datetime")}
+        return `
 ${companyName}
 Статистика: 
-Продаж за прошлый(ю) ${period} ${count} на сумму ${sum} руб. ${balance ? "Баланс " + balance + " руб" : ""}`
+Продаж за прошлый(ю) ${period}: ${count} на сумму ${sum} руб. ${balance ? "Баланс " + balance + " руб" : ""}`
     },
     reportMonth: function(sum, period, companyName, count, balance){
-        return `${textDate(new Date(), "datetime")}
+        return `
 ${companyName}
 Статистика: 
-Продаж за прошлый месяц ${count} на сумму ${sum} руб.  ${balance ? "Баланс " + balance + " руб" : ""}`
+Продаж за прошлый месяц: ${count} на сумму ${sum} руб.  ${balance ? "Баланс " + balance + " руб" : ""}`
     },
     reportWeek: function(sum, period, companyName, count, balance){
-        return `${textDate(new Date(), "datetime")}
+        return `
 ${companyName}
 Статистика: 
-Продаж за прошлую неделю ${count} на сумму ${sum} руб.  ${balance ? "Баланс " + balance + " руб" : ""}`
+Продаж за прошлую неделю: ${count} на сумму ${sum} руб.  ${balance ? "Баланс " + balance + " руб" : ""}`
     },
     reportDay: function(sum, period, companyName, count, balance){
-        return `${textDate(new Date(), "datetime")}
+        return `
 ${companyName}
 Статистика: 
-Продаж за прошлые сутки ${count} на сумму ${sum} руб.  ${balance ? "Баланс " + balance + " руб" : ""}`
+Продаж за прошлые сутки: ${count} на сумму ${sum} руб.  ${balance ? "Баланс " + balance + " руб" : ""}`
     }
 }

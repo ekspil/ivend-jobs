@@ -10,6 +10,7 @@ const simsControllersCompare = require("./simsControllersCompare")
 const resetSims = require("./resetSims")
 const checkNoCashless = require("./checkNoCashless")
 const checkIntegrations = require("./checkIntegrations")
+const longTasks = require("./longTasks")
 const cron = require("node-cron")
 const logger = require("my-custom-logger")
 
@@ -26,6 +27,7 @@ const jobs = (injects) => {
     const resetSimsJob = resetSims(injects)
     const checkNoCashlessJob = checkNoCashless(injects)
     const checkIntegrationsJob = checkIntegrations(injects)
+    const longTasksJob = longTasks(injects)
 
     const get = (jobName) => {
         switch (jobName) {
@@ -37,6 +39,8 @@ const jobs = (injects) => {
     }
 
     const start = () => {
+
+        let longTaskProcess = false
         // CHECK NO CASHLESS EVERY DAY
         cron.schedule("00 00 19 * * *", () => {
             checkNoCashlessJob()
@@ -60,6 +64,20 @@ const jobs = (injects) => {
                     logger.error("Failed to check controller connection statuses")
                     logger.error(e)
                 })
+        })
+        // Every 1 minute
+        cron.schedule("*/1 * * * *", () => {
+            if(longTaskProcess) return
+            longTaskProcess = true
+            longTasksJob()
+                .then(()=>{
+                    longTaskProcess = false
+                })
+                .catch((e) => {
+                    longTaskProcess = false
+                    logger.error("LONG_TASK_JOB_FAILED " + e.message)
+                })
+
         })
         // Every 10 minute
         cron.schedule("*/10 * * * *", () => {

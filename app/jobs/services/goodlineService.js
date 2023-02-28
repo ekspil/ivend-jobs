@@ -9,6 +9,8 @@ class Services {
         this.goodLineAuth = this.goodLineAuth.bind(this)
         this.getSimInfo = this.getSimInfo.bind(this)
         this.resetSim = this.resetSim.bind(this)
+        this.getNewsData = this.getNewsData.bind(this)
+        this.successNewsMassage = this.successNewsMassage.bind(this)
     }
 
     async waitASec(time) {
@@ -90,6 +92,41 @@ class Services {
             return false
         }
 
+
+    }
+
+    async getNewsData(task){
+
+        const users = await this.knex("users")
+            .select("id", "country_code as countryCode", "phone", "email")
+            .whereIn("role", ["VENDOR", "PARTNER"])
+
+        if(!users){
+            throw new Error("Users table is null")
+        }
+
+        const [news] = await this.knex("news")
+            .select("id", "text", )
+            .where("id", task.target_id)
+            .limit(1)
+
+        if(!news){
+            throw new Error("News not found")
+        }
+
+        return {news, users}
+
+    }
+
+    async successNewsMassage(task){
+
+        await this.knex("long_tasks")
+            .where("id", task.id)
+            .update({
+                status: "DONE",
+                updated_at: new Date()
+            })
+        return true
 
     }
 

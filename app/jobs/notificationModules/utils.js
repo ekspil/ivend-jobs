@@ -53,12 +53,74 @@ const sendEmail = async (email, msg) => {
 
 }
 
+const sendTextSMS = async (phone, text) => {
+    const body = JSON.stringify({text, phone})
+    const url = `${process.env.NOTIFICATION_URL}/api/v1/template/SMS_NEWS`
+    const method = "POST"
+
+    const response = await fetch(url, {
+        method,
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body
+    })
+
+    switch (response.status) {
+        case 200:
+            const json = await response.json()
+            const {sent} = json
+
+            if (!sent) {
+                throw new Error("JOBS_SMS_TEXT_EMAIL_ERROR_1")
+            }
+
+            return
+        default:
+            throw new Error("JOBS_SMS_TEXT_EMAIL_ERROR_2")
+    }
+
+
+
+
+}
+
+const sendTextEmail = async (email, text) => {
+    const body = JSON.stringify({text, email})
+    const url = `${process.env.NOTIFICATION_URL}/api/v1/template/TEXT_EMAIL`
+    const method = "POST"
+
+    const response = await fetch(url, {
+        method,
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body
+    })
+
+    switch (response.status) {
+        case 200:
+            const json = await response.json()
+            const {sent} = json
+
+            if (!sent) {
+                throw new Error("JOBS_SMS_TEXT_EMAIL_ERROR_1")
+            }
+
+            return
+        default:
+            throw new Error("JOBS_SMS_TEXT_EMAIL_ERROR_2")
+    }
+}
+
 module.exports = {
     sendEmail,
     sendTelegram,
     checkTime,
     setNotificationTime,
-    notificationTime
+    notificationTime,
+    sendTextEmail,
+    sendTextSMS
 
 
 }

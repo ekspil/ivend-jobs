@@ -23,8 +23,10 @@ class Services {
             options.minute = "2-digit"
             options.second = "2-digit"
         }
+        const SPBTime = (new Date().getTime() + (1000 * 60 * 60 * 3))
+        const date = new Date(SPBTime)
 
-        return new Intl.DateTimeFormat("ru-RU", options).format(new Date())
+        return new Intl.DateTimeFormat("ru-RU", options).format(date)
     }
     async getSalesSum(user, period, trx, fastYesterday){
         if(fastYesterday){

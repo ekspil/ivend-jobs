@@ -9,18 +9,22 @@ module.exports = (injects) => {
         return knex.transaction(async (trx) => {
             const controllers = await knex("controllers")
                 .transacting(trx)
-                .select("machines.id as machine_id", "controller_states.registration_time", "controllers.connected as connected", "controllers.uid as uid", "controllers.id as controller_id")
-                .leftJoin("controller_states", "controllers.last_state_id", "controller_states.id")
+                .select("machines.id as machine_id",  "controllers.uid as uid", "controllers.id as controller_id")
                 .leftJoin("machines", "machines.controller_id", "controllers.id")
                 .where({
                     status: "ENABLED"
                 })
-            // we already have some controller states
-                .whereNotNull("controller_states.registration_time")
 
             for (const controller of controllers) {
                 //logger.info(`${controller.uid} - started`)
-            
+                let controllerState = await redis.get("controller_last_state_" + controller.controller_id)
+                if(!controllerState) {
+                    continue
+                }
+                else{
+                    controllerState = JSON.parse(controllerState)
+                }
+
                 if (!controller.machine_id) {
                     //logger.info(`${controller.uid} - finished no machine`)
                     continue
@@ -38,32 +42,33 @@ module.exports = (injects) => {
 
 
                 const now = new Date()
-                const lastCommandTime = Math.max(controller.registration_time.getTime(), (sale ? sale.created_at.getTime() : null))
+                const lastCommandTime = Math.max(new Date(controllerState.registrationTime).getTime(), (sale ? sale.created_at.getTime() : null))
 
                 const expiryDate = new Date(lastCommandTime + Number(process.env.CONTROLLER_CONNECTION_TIMEOUT_MINUTES) * 60 * 1000)
                 const expiryDateMonth = new Date(lastCommandTime + 30 * 24 * 60 * 60 * 1000)
 
                 if (now > expiryDate) {
-                    let check = 0
-                    const update = {
-                        connected: false
-                    }
-                    if(now > expiryDateMonth) {
-                        check = 1                    
 
-                        update.status = "DISABLED"
+                    const controllerConnected = Boolean(await redis.hget("controller_connected", controller.controller_id))
+
+                    if(now > expiryDateMonth) {
+                        const update = {status: "DISABLED"}
+
+                        // set connected false
+                        await knex("controllers")
+                            .where("id", controller.controller_id)
+                            .update(update)
+                            .transacting(trx)
                     }
-                    if(!controller.connected && check === 0){
-                        //logger.info(`${controller.uid} - finished already checked`)
+
+                    if(!controllerConnected){
                         continue
                     }
-                    // set connected false
-                    await knex("controllers")
-                        .where("id", controller.controller_id)
-                        .update(update)
-                        .transacting(trx)
+
 
                     // redis set status
+
+                    await redis.hset("controller_connected", controller.controller_id, false)
                     await redis.set("machine_error_" + controller.machine_id, `NO CONNECTION`, "px", 24 * 60 * 60 * 1000)
                     await redis.set("machine_error_time_" + controller.machine_id, `${(new Date()).getTime()}`, "px", 24 * 60 * 60 * 1000)
                     // add machine log

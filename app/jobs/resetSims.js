@@ -14,7 +14,7 @@ module.exports = (injects) => {
         return knex.transaction(async (trx) => {
             const controllers = await knex("controllers")
                 .transacting(trx)
-                .select("machines.id as machine_id", "controller_states.registration_time", "controllers.connected as connected", "controllers.imsi as imsi", "controllers.id as controller_id")
+                .select("machines.id as machine_id", "controller_states.registration_time", "controllers.imsi as imsi", "controllers.id as controller_id")
                 .leftJoin("controller_states", "controllers.last_state_id", "controller_states.id")
                 .leftJoin("machines", "machines.controller_id", "controllers.id")
                 .where({

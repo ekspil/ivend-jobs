@@ -79,7 +79,7 @@ module.exports = (injects) => {
         return knex.transaction(async (trx) => {
             const controllers = await knex("controllers")
                 .transacting(trx)
-                .select("connected", "status", "id", "firmware_id")
+                .select("status", "id", "firmware_id")
                 .whereNull("deleted_at")
 
 
@@ -108,12 +108,13 @@ module.exports = (injects) => {
 
 
 
-            const statisticControllers = controllers.reduce((acc, controller) => {
+            const statisticControllers = controllers.reduce(async (acc, controller) => {
                 acc.count++
                 if(controller.status === "DISABLED"){
                     acc.disabled++
                 }
-                if(!controller.connected && controller.status !== "DISABLED" && controller.firmware_id){
+                const controllerConnected = Boolean(await redis.hget("controller_connected", controller.id))
+                if(!controllerConnected && controller.status !== "DISABLED" && controller.firmware_id){
                     acc.disconnected++
                 }
                 return acc

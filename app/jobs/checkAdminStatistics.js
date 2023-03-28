@@ -107,22 +107,22 @@ module.exports = (injects) => {
             })
 
 
-
-            const statisticControllers = controllers.reduce(async (acc, controller) => {
-                acc.count++
-                if(controller.status === "DISABLED"){
-                    acc.disabled++
-                }
-                const controllerConnected = Boolean(await redis.hget("controller_connected", controller.id))
-                if(!controllerConnected && controller.status !== "DISABLED" && controller.firmware_id){
-                    acc.disconnected++
-                }
-                return acc
-            }, {
+            let statisticControllers = {
                 count: 0,
                 disabled: 0,
                 disconnected: 0
-            })
+            }
+            for (let controller of controllers){
+                statisticControllers.count++
+                if(controller.status === "DISABLED"){
+                    statisticControllers.disabled++
+                }
+                const controllerConnected = Boolean(await redis.hget("controller_connected", controller.id))
+                if(!controllerConnected && controller.status !== "DISABLED" && controller.firmware_id){
+                    statisticControllers.disconnected++
+                }
+
+            }
 
             const statisticKkts = {
                 count: 0,

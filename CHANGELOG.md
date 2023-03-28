@@ -291,3 +291,7 @@
 # 1.2.56 - Hotfix
 
 * connection fix check
+
+# 1.2.57 - Hotfix
+
+* connection fix check

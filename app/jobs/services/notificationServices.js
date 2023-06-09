@@ -76,7 +76,7 @@ class Services {
             })
 
         return news.reduce((acc, n) => {
-            let tgText = n.text.replace( /(<([^>]+)>)/ig, `
+            let tgText = n.text.replace( /(<([^>]+)>)*(<([^>]+)>)/ig, `
 ` )
             tgText = tgText.replace( /&nbsp;/g, " " )
 

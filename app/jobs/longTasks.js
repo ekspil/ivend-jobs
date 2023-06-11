@@ -27,7 +27,7 @@ module.exports = (injects) => {
 
                 const {news, users} = await getNewsData(task)
 
-                let text = news.text.replace( /(<([^>]+)>)/ig, `
+                let text = news.text.replace( /(<([^>]+)>)*(<([^>]+)>)/ig, `
 ` )
                 const counter = {all: users.length, success: 0, error: 0}
                 for(let us of users){

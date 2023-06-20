@@ -295,3 +295,8 @@
 # 1.2.57 - Hotfix
 
 * connection fix check
+
+
+# 1.2.58 - Hotfix
+
+* fix no balance

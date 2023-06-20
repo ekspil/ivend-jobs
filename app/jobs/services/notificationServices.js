@@ -29,11 +29,12 @@ class Services {
         return new Intl.DateTimeFormat("ru-RU", options).format(date)
     }
     async getSalesSum(user, period, trx, fastYesterday){
+        const [temp] = await this.knex("temps")
+            .transacting(trx)
+            .where("user_id", user.user_id)
+            .select("amount_yesterday", "user_id", "count_yesterday", "amount")
+
         if(fastYesterday){
-            const [temp] = await this.knex("temps")
-                .transacting(trx)
-                .where("user_id", user.user_id)
-                .select("amount_yesterday", "user_id", "count_yesterday", "amount")
             if(!temp){
                 return {sum: 0, count: 0, balance: 0}
             }
@@ -56,7 +57,8 @@ class Services {
             return Number(acc) + Number(item.price)
         }, 0)
         let count = allSales.length
-        return {sum, count}
+
+        return {sum, count, balance: Number(temp.amount)}
 
     }
     async getLastNews(trx){

@@ -29,9 +29,7 @@ module.exports = (injects) => {
             const users = await knex("users")
                 .transacting(trx)
                 .select("email", "phone", "id as user_id")
-            // .where({
-            //     role: "VENDOR"
-            // })
+                .whereNot("role", "CLOSED")
 
 
             for (const user of users) {

@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
       - name: jobs
-        image: cr.yandex/crpfb8t478v3of681kce/jobs:1.2.58
+        image: cr.yandex/crpfb8t478v3of681kce/jobs:1.2.59
         readinessProbe:
           exec:
             command:

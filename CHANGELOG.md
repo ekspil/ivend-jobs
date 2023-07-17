@@ -300,3 +300,7 @@
 # 1.2.58 - Hotfix
 
 * fix no balance
+
+# 1.2.60 - Release
+
+* new architecture of notifications

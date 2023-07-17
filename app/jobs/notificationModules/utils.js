@@ -1,4 +1,4 @@
-//const logger = require("my-custom-logger")
+const logger = require("my-custom-logger")
 const fetch = require("node-fetch")
 
 const notificationTime = {}
@@ -27,28 +27,38 @@ const sendTelegram = async (chat, msg) => {
     const body = JSON.stringify({chat, msg})
     const url = `${process.env.NOTIFICATION_URL}/api/v1/template/TELEGRAM_MSG`
     const method = "POST"
+    try {
+        return await fetch(url, {
+            method,
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body
+        })
+    }
+    catch (e) {
+        logger.info(`NOTIFICATION_SEND_TELEGRAM_FETCH_ERROR chat: ${chat} ${e.message}`)
+    }
 
-    return await fetch(url, {
-        method,
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body
-    })
 }
 
 const sendEmail = async (email, msg) => {
     const body = JSON.stringify({email, msg})
     const url = `${process.env.NOTIFICATION_URL}/api/v1/template/EMAIL_MSG`
     const method = "POST"
+    try {
+        return await fetch(url, {
+            method,
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body
+        }) 
+    }
+    catch (e) {
+        logger.info(`NOTIFICATION_SEND_EMAIL_FETCH_ERROR email: ${email} ${e.message}`)
+    }
 
-    return await fetch(url, {
-        method,
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body
-    })
 
 
 }

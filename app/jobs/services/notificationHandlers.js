@@ -38,7 +38,7 @@ class Handlers {
 
 
             this.services.generateMachineMessages(user, mach, event, "Нет связи с автоматом")
-            await this.services.setNotificationTime(event.type, "machine" + mach.id + mach.lostConnection)
+            await this.services.setNotificationTime(event.type, "machine" + mach.id + mach.lostConnection, 30 * 24 * 60 * 60)
         }
 
     }

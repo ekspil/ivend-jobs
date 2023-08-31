@@ -304,3 +304,7 @@
 # 1.2.60 - Release
 
 * new architecture of notifications
+
+# 1.2.61 - Release
+
+* vendista multitoken
